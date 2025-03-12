@@ -100,7 +100,7 @@ Edit profile page: can edit name, email, icon, and option to delete account nav 
 
 ### Mockups
 
-![Mockups of Leuchte](image-1.png)
+![Mockups of Leuchte](image.png)
 
 ### Data
 
