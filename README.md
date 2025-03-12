@@ -1,6 +1,4 @@
-# Project Title
-
-Aperture
+# Aperture
 
 ## Overview
 
