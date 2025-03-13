@@ -10,11 +10,25 @@ export default function Auth() {
 
   async function signInWithEmail() {
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     })
 
+    console.log
+
+    const user = data.user; // get user from the response
+  if (user) {
+    const { error: updateError } = await supabase
+      .from('profiles') // Replace 'users' with your actual table name
+      .update({ is_active: true })
+      .eq('id', user.id); // match user by their ID
+
+    if (updateError) {
+      console.error('Failed to update is_active:', updateError.message);
+      Alert.alert('Error updating user status');
+    }
+  }
     if (error) Alert.alert(error.message)
     setLoading(false)
   }
@@ -64,6 +78,8 @@ export default function Auth() {
           disabled={loading}
           onPress={signInWithEmail}
         />
+        </View>
+        <View style={styles.verticallySpaced}>
         <Button
           title="Sign up"
           disabled={loading}
