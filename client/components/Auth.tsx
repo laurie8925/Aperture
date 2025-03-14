@@ -22,7 +22,7 @@ export default function Auth() {
     const user = data.user; // get user from the response
   if (user) {
     const { error: updateError } = await supabase
-      .from('profiles') // Replace 'users' with your actual table name
+      .from('profiles') // replace 'users' with your actual table name
       .update({ is_active: true })
       .eq('id', user.id); // match user by their ID
 
@@ -66,7 +66,7 @@ export default function Auth() {
           placeholder="email@email.com"
           placeholderTextColor="#c2b6b6"
           autoCapitalize="none"
-          keyboardType="email-address" // Better for Android
+          keyboardType="email-address" 
         />
       </View>
       <View style={styles.verticallySpaced}>
@@ -114,10 +114,10 @@ const styles = StyleSheet.create({
     alignItems: "center",},
   mt20: { marginTop: 20 },
   placeholder: {
-    backgroundColor: "#f6ebd9", // Light beige
+    backgroundColor: "#f6ebd9",
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 999, // Fully rounded
+    borderRadius: 999, 
     shadowColor: "#000",
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.2,
