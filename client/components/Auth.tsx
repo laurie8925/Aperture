@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, View, Text } from 'react-native';
 import Icon from "react-native-vector-icons/FontAwesome";
-import { supabase } from '../lib/supabase';
+import { supabase } from '../utils/supabase';
 import { Button, Input } from '@rneui/themed';
 
 export default function Auth() {
