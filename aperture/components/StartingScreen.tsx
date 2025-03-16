@@ -1,5 +1,6 @@
 import { View, Text, Button,StyleSheet } from 'react-native'
 import React from 'react'
+import LogIn from "./Login"
 import { useNavigation } from '@react-navigation/native'
 
 const StartingScreen = () => {
@@ -11,7 +12,7 @@ const StartingScreen = () => {
         <Button
           title="StartingScreen"
           
-          onPress={()=>navigation.navigate('SignIn')}
+          onPress={()=>navigation.navigate(LogIn)}
         />
       </View>
     </View>

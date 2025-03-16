@@ -29,7 +29,7 @@ export default function Auth() {
       Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
-      navigation.navigate('SignIn')
+      // navigation.navigate('SignIn')
     }
   }
 

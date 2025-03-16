@@ -2,12 +2,13 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import SignIn from "../components/SignIn";
+// import SignIn from "../components/SignIn";
 import StartingScreen from "../components/StartingScreen";
 import SignUp from "../components/SignUp";
 import HomeScreen from "../components/HomeScreen";
 import AccountScreen from "../components/AccountScreen";
 // import SettingsScreen from '../components/SettingsScreen';
+import Login from "../components/Login";
 import { Session } from "@supabase/supabase-js";
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -51,8 +52,8 @@ function AuthStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="SignIn"
-        component={SignIn}
+        name="Login"
+        component={Login}
         options={{ headerShown: false }}
       />
       <Stack.Screen
