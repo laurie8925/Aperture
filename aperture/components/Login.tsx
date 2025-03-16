@@ -19,6 +19,7 @@ const Login = () => {
       try {
         const token = await AsyncStorage.getItem("token");
         if (!token) return;
+        console.log("Token being sent:", token);
 
         const response = await axios.get("http://192.168.1.78:8080/user", {
           headers: { Authorization: `Bearer ${token}` },
@@ -40,31 +41,29 @@ const Login = () => {
       const response = await axios.post("http://192.168.1.78:8080/login", {
         email,
         password,
-      },
-      { headers: { "Content-Type": "application/json" } });
-
-    //   console.log("Login response:", response.data); // Check API response
-
-if (!response.data.token) {
-  throw new Error("No token received");
-}
-
+      }, { headers: { "Content-Type": "application/json" } });
+  
+      if (!response.data.token) {
+        throw new Error("No token received");
+      }
+  
       await AsyncStorage.setItem("token", response.data.token);
       console.log('Token saved:', response.data.token);
-
+  
       const userResponse = await axios.get("http://192.168.1.78:8080/user", {
         headers: { Authorization: `Bearer ${response.data.token}` },
       });
-
+  
+      console.log("frontend header", response.data.token);
+      console.log("User response:", userResponse.data); // Add this
+  
       setLoggedIn(true);
       setUser(userResponse.data.user);
       setError("");
-
-    //   navigation.navigate("Profile"); // Navigate to Profile screen after login
     } catch (err) {
-        console.error("Login request failed:", err?.response?.data || err.message);
-        setError(err?.response?.data?.message || "Error logging in");
-      }
+      console.error("Login request failed:", err?.response?.data || err.message);
+      setError(err?.response?.data?.message || "Error logging in");
+    }
   };
 
   return (

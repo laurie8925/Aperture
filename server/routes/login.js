@@ -4,7 +4,9 @@ import jwt from "jsonwebtoken";
 import supabase from "../config/supabase.js";
 
 const router = express.Router();
+
 const { SUPABASE_JWT_SECRET } = process.env;
+
 router.route("/").post(async (req, res) => {
   const { email, password } = req.body;
 
