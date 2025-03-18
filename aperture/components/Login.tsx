@@ -1,68 +1,92 @@
-import React, { useState, useEffect } from "react";
-import { View, TextInput, StyleSheet, Alert } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from "axios";
+import axios, { AxiosError } from 'axios'; // Import AxiosError
 import { Button, Input } from '@rneui/themed';
-import { useNavigation } from '@react-navigation/native';
 
-const Login = () => {
+interface LoginProps {
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Login = ({ setIsAuthenticated }: LoginProps) => {
   const [user, setUser] = useState({});
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-//   const navigation = useNavigation(); // Corrected useNavigation usage
+  const backendUrl = process.env.EXPO_BACKEND_URL || '';
 
   useEffect(() => {
     const getUserData = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
+        const token = await AsyncStorage.getItem('token');
         if (!token) return;
-        console.log("Token being sent:", token);
+        console.log('Token being sent:', token);
 
-        const response = await axios.get("http://192.168.1.78:8080/user", {
+        const response = await axios.get(`${backendUrl}/user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setLoggedIn(true);
         setUser(response.data.user);
-      } catch (err) {
-        console.error(err?.response?.data?.message || "Error fetching user data");
-        setError("Error getting user data");
+        setIsAuthenticated(true);
+      } catch (error: unknown) { // Type the error as AxiosError
+        if (axios.isAxiosError(error)) {
+          console.error(
+            error.response?.data?.message || 'Error fetching user data'
+          );
+          setError('Error getting user data');
+        } else {
+          console.error('Unexpected error:', error);
+          setError('Unexpected error occurred');
+        }
       }
+      
     };
 
     getUserData();
-  }, []);
+  }, [setIsAuthenticated]);
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://192.168.1.78:8080/login", {
+      const response = await axios.post(`${backendUrl}/login`, {
         email,
         password,
-      }, { headers: { "Content-Type": "application/json" } });
-  
+      }, { headers: { 'Content-Type': 'application/json' } });
+
       if (!response.data.token) {
-        throw new Error("No token received");
+        throw new Error('No token received');
       }
-  
-      await AsyncStorage.setItem("token", response.data.token);
-      console.log('Token saved:', response.data.token);
-  
-      const userResponse = await axios.get("http://192.168.1.78:8080/user", {
-        headers: { Authorization: `Bearer ${response.data.token}` },
-      });
-  
-      console.log("frontend header", response.data.token);
-      console.log("User response:", userResponse.data); // Add this
-  
-      setLoggedIn(true);
-      setUser(userResponse.data.user);
-      setError("");
-    } catch (err) {
-      console.error("Login request failed:", err?.response?.data || err.message);
-      setError(err?.response?.data?.message || "Error logging in");
+
+      const { token, user } = response.data; // Assume user data might be included
+      await AsyncStorage.setItem('token', token);
+      console.log('Token saved:', token);
+
+      if (user) {
+        // If /login returns user data, use it directly
+        console.log('User from login:', user);
+        setUser(user);
+        setIsAuthenticated(true);
+        setError('');
+      } else {
+        // Otherwise, fetch from /user
+        const userResponse = await axios.get(`${backendUrl}/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('User response:', userResponse.data);
+        setUser(userResponse.data.user);
+        setIsAuthenticated(true);
+        setError('');
+      }
+    } catch (error: unknown) { // Type the error as AxiosError
+      if (axios.isAxiosError(error)) {
+        console.error(
+          error.response?.data?.message || 'Error fetching user data'
+        );
+        setError('Error getting user data');
+      } else {
+        console.error('Unexpected error:', error);
+        setError('Unexpected error occurred');
+      }
     }
   };
 
@@ -75,7 +99,6 @@ const Login = () => {
         autoComplete="email"
         onChangeText={(text) => setEmail(text)}
         value={email}
-       
       />
       <Input
         style={styles.input}
@@ -86,10 +109,10 @@ const Login = () => {
         onChangeText={(text) => setPassword(text)}
       />
       <Button title="Login" onPress={handleLogin} />
-     
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -97,11 +120,15 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
     borderRadius: 5,
+  },
+  error: {
+    color: 'red',
+    marginTop: 10,
   },
 });
 

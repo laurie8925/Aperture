@@ -1,17 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { supabase } from '../utils/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { emitSignOut } from '../utils/authEvent';
 
-export default function AccountScreen() {
-  const navigation = useNavigation();
+interface AccountProps {
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function AccountScreen({ setIsAuthenticated }:AccountProps) {
+  const handleSignOut = async () => {
+    try {
+      console.log('signing out...');
+      await AsyncStorage.removeItem('token'); // Clear the token
+      console.log('Token removed');
+      emitSignOut();
+      setIsAuthenticated(false);
+    } catch (err) {
+      console.error('Error during sign-out:', err);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text>Profile Screen</Text>
-      <Button
-        title="Sign Out"
-        onPress={async () => await supabase.auth.signOut()}
-      />
+      <Button title="Sign Out" onPress={handleSignOut} />
     </View>
   );
 }

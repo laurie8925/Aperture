@@ -1,49 +1,50 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import SignIn from "../components/SignIn";
-import StartingScreen from "../components/StartingScreen";
-import SignUp from "../components/SignUp";
-import HomeScreen from "../components/HomeScreen";
-import AccountScreen from "../components/AccountScreen";
-// import SettingsScreen from '../components/SettingsScreen';
-import Login from "../components/Login";
-import { Session } from "@supabase/supabase-js";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import StartingScreen from '../components/StartingScreen';
+import SignUp from '../components/SignUp';
+import HomeScreen from '../components/HomeScreen';
+import AccountScreen from '../components/AccountScreen';
+import Login from '../components/Login';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { onAuthChange } from '../utils/authEvent';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-type AppNavigatorProps = {
-  session: Session | null;
-};
+interface AuthProps {
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-// Tab Navigator for logged-in users
-function TabNavigator() {
+const backendUrl = process.env.EXPO_BACKEND_URL || '';
+
+function TabNavigator({ setIsAuthenticated }:AuthProps) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === "Home") iconName = "home";
-          else if (route.name === "Account") iconName = "user";
-          //   else if (route.name === 'Settings') iconName = 'cog';
-          return <Icon name={iconName!} size={size} color={color} />;
+          if (route.name === 'Home') iconName = 'home';
+          else if (route.name === 'Account') iconName = 'user';
+          return <Icon name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#360C0C",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: '#360C0C',
+        tabBarInactiveTintColor: 'gray',
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Account" component={AccountScreen} />
-      {/* <Tab.Screen name="Settings" component={SettingsScreen} /> */}
+      <Tab.Screen
+        name='Account'
+        children={(props) => <AccountScreen setIsAuthenticated={setIsAuthenticated} />}
+      />
     </Tab.Navigator>
   );
 }
 
-// Stack Navigator for auth flow
-function AuthStack() {
+function AuthStack({ setIsAuthenticated }:AuthProps) {
   return (
     <Stack.Navigator initialRouteName="StartingScreen">
       <Stack.Screen
@@ -53,7 +54,7 @@ function AuthStack() {
       />
       <Stack.Screen
         name="Login"
-        component={Login}
+        children={(props) => <Login setIsAuthenticated={setIsAuthenticated} />}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -65,10 +66,37 @@ function AuthStack() {
   );
 }
 
-export default function AppNavigator({ session }: AppNavigatorProps) {
+export default function AppNavigator() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const checkAuth = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const response = await axios.get(`${backendUrl}/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data.user) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (err:unknown) {
+      console.error('Auth check failed:', err?.response?.data?.message || err.message);
+      setIsAuthenticated(false);
+    }
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   return (
     <NavigationContainer>
-      {session ? <TabNavigator /> : <AuthStack />}
+      {isAuthenticated ? <TabNavigator setIsAuthenticated={setIsAuthenticated} /> : <AuthStack setIsAuthenticated={setIsAuthenticated}/>}
     </NavigationContainer>
   );
 }

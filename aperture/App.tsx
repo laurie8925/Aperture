@@ -24,7 +24,7 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  return <AppNavigator session={session} />;
+  return <AppNavigator/>;
 }
 
 const styles = StyleSheet.create({

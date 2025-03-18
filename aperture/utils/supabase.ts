@@ -30,14 +30,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // only be registered once.
 
 //token management
-export const storeToken = async (token) => {
+export const storeToken = async (token: string): Promise<void> => {
   await SecureStore.setItemAsync("userToken", token);
 };
 
-export const getToken = async () => {
+export const getToken = async (): Promise<string | null> => {
   return await SecureStore.getItemAsync("userToken");
 };
 
-export const deleteToken = async () => {
+export const deleteToken = async (): Promise<void> => {
   await SecureStore.deleteItemAsync("userToken");
 };
