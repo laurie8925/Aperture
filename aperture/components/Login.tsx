@@ -14,7 +14,7 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const backendUrl = process.env.EXPO_BACKEND_URL || '';
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
   useEffect(() => {
     const getUserData = async () => {
@@ -57,32 +57,21 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
         throw new Error('No token received');
       }
 
-      const { token, user } = response.data; // Assume user data might be included
+      const { token, user } = response.data; 
       await AsyncStorage.setItem('token', token);
       console.log('Token saved:', token);
 
-      if (user) {
-        // If /login returns user data, use it directly
-        console.log('User from login:', user);
-        setUser(user);
-        setIsAuthenticated(true);
-        setError('');
-      } else {
-        // Otherwise, fetch from /user
-        const userResponse = await axios.get(`${backendUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log('User response:', userResponse.data);
-        setUser(userResponse.data.user);
-        setIsAuthenticated(true);
-        setError('');
-      }
-    } catch (error: unknown) { // Type the error as AxiosError
+      console.log('User from login:', user);
+      setUser(user);
+      setError('');
+      setIsAuthenticated(true);
+    } catch (error: unknown) { // Type as unknown
+      // Type guard to check if it's an AxiosError
       if (axios.isAxiosError(error)) {
         console.error(
-          error.response?.data?.message || 'Error fetching user data'
+          error.response?.data?.message || 'Error logging in'
         );
-        setError('Error getting user data');
+        setError(error.response?.data?.message || 'Error logging in');
       } else {
         console.error('Unexpected error:', error);
         setError('Unexpected error occurred');
