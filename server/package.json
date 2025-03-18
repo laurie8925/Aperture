@@ -13,9 +13,13 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
     "axios": "^1.8.2",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "from": "^0.1.7",
+    "import": "^0.0.6",
+    "jsonwebtoken": "^9.0.2",
     "uuid": "^11.1.0"
   }
 }
