@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError } from "axios"; // Import AxiosError
 import { Button, Input } from "@rneui/themed";
+import { supabase } from "../utils/supabase";
 
 interface LoginProps {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
@@ -64,6 +65,18 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
       const { token, user } = response.data;
       await AsyncStorage.setItem("token", token);
       console.log("Token saved:", token);
+
+      const { error: authError } = await supabase.auth.setSession({
+        access_token: token,
+      });
+      if (authError) {
+        console.error("Supabase auth error:", authError.message);
+        throw new Error(`Failed to set Supabase session: ${authError.message}`);
+      }
+
+      console.log("Supabase session set with backend token");
+      const { data: session } = await supabase.auth.getSession();
+      console.log("Active Supabase session:", session);
 
       if (user) {
         // If /login returns user data, use it directly

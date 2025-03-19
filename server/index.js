@@ -12,7 +12,7 @@ import authenticateToken from "./middleware/authMiddleware.js";
 const app = express();
 
 const PORT = process.env.PORT || 8080;
-const backendUrl = process.env.BACKEND_URL;
+const backendUrl = process.env.BACKEND_IP;
 const { SUPABASE_JWT_SECRET } = process.env;
 
 app.use(cors());
@@ -30,5 +30,5 @@ app.get("/user", authenticateToken, (req, res) => {
 app.use("/login", loginRoute);
 
 app.listen(PORT, backendUrl, () => {
-  console.log(`Server running on ${backendUrl}:${PORT}`);
+  console.log(`Server running on http://${backendUrl}:${PORT}`);
 });

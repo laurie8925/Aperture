@@ -39,8 +39,10 @@ function TabNavigator({ setIsAuthenticated }: AuthProps) {
       })}
     >
       <Tab.Screen
-        name="HomeTab"
-        component={HomeNavigator}
+        name="Home"
+        children={(props) => (
+          <HomeNavigator setIsAuthenticated={setIsAuthenticated} />
+        )}
         options={{ headerShown: false }}
       />
       <Tab.Screen
@@ -53,11 +55,16 @@ function TabNavigator({ setIsAuthenticated }: AuthProps) {
   );
 }
 
-function HomeNavigator() {
+function HomeNavigator({ setIsAuthenticated }: AuthProps) {
   return (
     <Stack.Navigator>
       <Stack.Screen name="HomeMain" component={HomeScreen} />
-      <Stack.Screen name="Entry" component={PhotoEntryScreen} />
+      <Stack.Screen
+        name="Entry"
+        children={(props) => (
+          <PhotoEntryScreen setIsAuthenticated={setIsAuthenticated} />
+        )}
+      />
     </Stack.Navigator>
   );
 }

@@ -64,6 +64,10 @@ export default function PhotoEntryScreen({ url, size = 150, onUpload }: Props) {
 
       const image = result.assets[0];
 
+      const { data: session, error: authError } =
+        await supabase.auth.getSession();
+      console.log("Supabase session:", session, "Auth error:", authError);
+
       console.log(image);
       const arraybuffer = await fetch(image.uri).then((res) =>
         res.arrayBuffer()

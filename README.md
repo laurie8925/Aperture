@@ -38,7 +38,6 @@ Backend
 Database & File Storage
 
 - MySQL
-- Firebase (for photos)
 
 Authentication
 
