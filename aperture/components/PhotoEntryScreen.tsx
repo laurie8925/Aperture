@@ -15,7 +15,7 @@ interface Props {
 
 export default function PhotoEntryScreen({ url, size = 150 }: Props) {
   const [uploading, setUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [note, setNote] = useState(""); // Add state for note
   const [token, setToken] = useState(""); // Add state for token
   const [prompt, setPrompt] = useState(""); // Add state for token
@@ -24,8 +24,6 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
 
   // Fetch the token when the component mounts
   useEffect(() => {
-    if (url) downloadImage(url);
-
     // Get the token from Supabase session
     const getTokenAndPrompt = async () => {
       try {
@@ -59,21 +57,6 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
     getTokenAndPrompt();
   }, [url]);
 
-  async function downloadImage(path: string) {
-    try {
-      const { data, error } = await supabase.storage
-        .from("user-photos")
-        .getPublicUrl(path);
-
-      if (error) throw error;
-      setAvatarUrl(data.publicUrl);
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert("Failed to load image", error.message);
-      }
-    }
-  }
-
   async function uploadImage() {
     try {
       setUploading(true);
@@ -97,6 +80,7 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
 
       const image = result.assets[0];
 
+      // config img for storage
       const arraybuffer = await fetch(image.uri).then((res) =>
         res.arrayBuffer()
       );
@@ -126,6 +110,8 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
       const imageUrl = publicUrlData.publicUrl;
       console.log("Image URL:", imageUrl);
 
+      setPhotoUrl(imageUrl);
+
       // Log the values before making the request
       console.log("Making request to /photo/add-photo with:");
       console.log("Token:", token);
@@ -133,7 +119,7 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
       console.log("Image URL:", imageUrl);
       console.log("Note:", note || "No note provided");
       console.log("Request Body:", {
-        prompt_id: prompt,
+        prompt_id: promptId,
         image_url: imageUrl,
         note: note || "No note provided",
       });
@@ -141,7 +127,7 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
       const response = await axios.post(
         `${backendUrl}/photo/add-photo`,
         {
-          prompt_id: prompt,
+          prompt_id: promptId,
           image_url: imageUrl,
           note: note || "No note provided",
         },
@@ -153,7 +139,6 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
       );
 
       console.log("Photo added to database:", response.data);
-      await downloadImage(data.path);
     } catch (error) {
       if (error.response) {
         console.error("Response data:", error.response.data);
@@ -180,28 +165,31 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
 
   return (
     <View>
-      {avatarUrl ? (
+      {photoUrl ? (
         <Image
-          source={{ uri: avatarUrl }}
+          source={{ uri: photoUrl }}
           accessibilityLabel="Avatar"
           style={[avatarSize, styles.avatar, styles.image]}
         />
       ) : (
-        <View style={[avatarSize, styles.avatar, styles.noImage]} />
+        <View>
+          <View style={[avatarSize, styles.avatar, styles.noImage]} />
+          <View>
+            <Button
+              title={uploading ? "Uploading ..." : "Upload"}
+              onPress={uploadImage}
+              disabled={uploading}
+            />
+          </View>
+        </View>
       )}
+
       <View style={styles.inputContainer}>
         <Input
           label="Note"
           value={note}
           onChangeText={(text) => setNote(text)}
           placeholder="Add a note for this photo"
-        />
-      </View>
-      <View>
-        <Button
-          title={uploading ? "Uploading ..." : "Upload"}
-          onPress={uploadImage}
-          disabled={uploading}
         />
       </View>
     </View>
