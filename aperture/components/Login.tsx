@@ -62,21 +62,9 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
         throw new Error("No token received");
       }
 
-      const { token, user } = response.data;
+      const { token, user, refresh_token } = response.data;
       await AsyncStorage.setItem("token", token);
       console.log("Token saved:", token);
-
-      const { error: authError } = await supabase.auth.setSession({
-        access_token: token,
-      });
-      if (authError) {
-        console.error("Supabase auth error:", authError.message);
-        throw new Error(`Failed to set Supabase session: ${authError.message}`);
-      }
-
-      console.log("Supabase session set with backend token");
-      const { data: session } = await supabase.auth.getSession();
-      console.log("Active Supabase session:", session);
 
       if (user) {
         // If /login returns user data, use it directly
@@ -133,7 +121,9 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   input: {
     height: 40,

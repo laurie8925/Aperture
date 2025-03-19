@@ -3,21 +3,60 @@ import { supabase } from "../utils/supabase";
 import { StyleSheet, View, Alert, Image } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 interface Props {
   size: number;
   url: string | null;
-  onUpload: (filePath: string) => void;
 }
 
-export default function PhotoEntryScreen({ url, size = 150, onUpload }: Props) {
+export default function PhotoEntryScreen({ url, size = 150 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [note, setNote] = useState(""); // Add state for note
+  const [token, setToken] = useState(""); // Add state for token
+  const [prompt, setPrompt] = useState(""); // Add state for token
+  const [promptId, setPromptId] = useState(""); // Add state for token
   const avatarSize = { height: size, width: size };
 
+  // Fetch the token when the component mounts
   useEffect(() => {
-    console.log("Initial url:", url);
     if (url) downloadImage(url);
+
+    // Get the token from Supabase session
+    const getTokenAndPrompt = async () => {
+      try {
+        // get seesion for toekn
+        const storedToken = await AsyncStorage.getItem("token");
+        if (!storedToken) {
+          return;
+        }
+        setToken(storedToken);
+        // PROMPTS
+        const promptResponse = await axios.get(`${backendUrl}/prompts/today`); // Updated endpoint
+
+        // Check if the response contains the expected data
+        if (!promptResponse.data || !promptResponse.data.id) {
+          throw new Error(
+            "Failed to fetch prompt: No prompt ID found in response"
+          );
+        }
+
+        setToken(storedToken);
+        setPromptId(promptResponse.data.id);
+        setPrompt(promptResponse.data.prompt);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error fetching token or prompt:", error.message);
+          Alert.alert("Error", error.message);
+        }
+      }
+    };
+
+    getTokenAndPrompt();
   }, [url]);
 
   async function downloadImage(path: string) {
@@ -35,26 +74,20 @@ export default function PhotoEntryScreen({ url, size = 150, onUpload }: Props) {
     }
   }
 
-  async function uploadAvatar() {
+  async function uploadImage() {
     try {
       setUploading(true);
 
-      const { data: session, error: authError } =
-        await supabase.auth.getSession();
-      console.log(
-        "Supabase session before upload:",
-        session,
-        "Auth error:",
-        authError
-      );
-      if (!session?.session) {
-        throw new Error("No active Supabase session. Please log in again.");
+      if (!token) {
+        throw new Error("No token available. Please log in again.");
       }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         allowsMultipleSelection: false,
         allowsEditing: true,
-        quality: 1,
+        quality: 0.5,
+        aspect: [1, 1],
         exif: false,
       });
 
@@ -64,7 +97,6 @@ export default function PhotoEntryScreen({ url, size = 150, onUpload }: Props) {
 
       const image = result.assets[0];
 
-      console.log(image);
       const arraybuffer = await fetch(image.uri).then((res) =>
         res.arrayBuffer()
       );
@@ -78,17 +110,67 @@ export default function PhotoEntryScreen({ url, size = 150, onUpload }: Props) {
         });
 
       console.log("Upload response:", { data, error: uploadError });
-      console.log(data);
 
       if (uploadError) {
         throw uploadError;
       }
 
-      console.log("Upload successful, data:", data);
+      const { data: publicUrlData, error: urlError } = await supabase.storage
+        .from("user-photos")
+        .getPublicUrl(data.path);
+
+      if (urlError) {
+        throw urlError;
+      }
+
+      const imageUrl = publicUrlData.publicUrl;
+      console.log("Image URL:", imageUrl);
+
+      // Log the values before making the request
+      console.log("Making request to /photo/add-photo with:");
+      console.log("Token:", token);
+      console.log("Prompt ID:", prompt);
+      console.log("Image URL:", imageUrl);
+      console.log("Note:", note || "No note provided");
+      console.log("Request Body:", {
+        prompt_id: prompt,
+        image_url: imageUrl,
+        note: note || "No note provided",
+      });
+
+      const response = await axios.post(
+        `${backendUrl}/photo/add-photo`,
+        {
+          prompt_id: prompt,
+          image_url: imageUrl,
+          note: note || "No note provided",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Photo added to database:", response.data);
       await downloadImage(data.path);
-      onUpload(data.path);
     } catch (error) {
-      if (error instanceof Error) {
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        console.error("Response headers:", error.response.headers);
+        Alert.alert(
+          "Upload failed",
+          `Server error: ${error.response.data.error || error.message}`
+        );
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+        Alert.alert(
+          "Upload failed",
+          "No response from server. Check your network connection."
+        );
+      } else {
+        console.error("Request setup error:", error.message);
         Alert.alert("Upload failed", error.message);
       }
     } finally {
@@ -107,10 +189,18 @@ export default function PhotoEntryScreen({ url, size = 150, onUpload }: Props) {
       ) : (
         <View style={[avatarSize, styles.avatar, styles.noImage]} />
       )}
+      <View style={styles.inputContainer}>
+        <Input
+          label="Note"
+          value={note}
+          onChangeText={(text) => setNote(text)}
+          placeholder="Add a note for this photo"
+        />
+      </View>
       <View>
         <Button
           title={uploading ? "Uploading ..." : "Upload"}
-          onPress={uploadAvatar}
+          onPress={uploadImage}
           disabled={uploading}
         />
       </View>
@@ -134,5 +224,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderColor: "rgb(200, 200, 200)",
     borderRadius: 5,
+  },
+  inputContainer: {
+    marginVertical: 10,
   },
 });

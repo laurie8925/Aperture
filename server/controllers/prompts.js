@@ -19,6 +19,7 @@ const getTodayPrompt = async (req, res) => {
   const { data, error } = await supabase
     .from("prompts")
     .select()
+    .single()
     .eq("date", formattedDate);
 
   if (error) {

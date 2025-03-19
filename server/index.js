@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 
 import promptRoute from "./routes/prompts.js";
 import loginRoute from "./routes/login.js";
+import photoRoute from "./routes/photo.js";
 import authenticateToken from "./middleware/authMiddleware.js";
 
 const app = express();
@@ -28,6 +29,7 @@ app.get("/user", authenticateToken, (req, res) => {
 });
 
 app.use("/login", loginRoute);
+app.use("/photo", photoRoute);
 
 app.listen(PORT, backendUrl, () => {
   console.log(`Server running on http://${backendUrl}:${PORT}`);
