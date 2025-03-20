@@ -177,6 +177,8 @@ export default function PhotoEntryScreen({
       );
       console.log("Photo added to database:", response.data);
 
+      //once uploaded, navigate to showentry screen
+      //pass photo, note, and prompt to showentry scren
       navigation.navigate("ShowEntry", {
         photoUrl: photoUrl || "",
         note: note || "",
