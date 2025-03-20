@@ -5,22 +5,34 @@ import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationProp } from "@react-navigation/native";
+
+type RootStackParamList = {
+  PhotoEntry: undefined;
+  ShowEntry: { photoUrl: string; note: string; prompt: string };
+};
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 interface Props {
   size: number;
   url: string | null;
+  navigation: NavigationProp<RootStackParamList, "PhotoEntry">;
 }
 
-export default function PhotoEntryScreen({ url, size = 150 }: Props) {
+export default function PhotoEntryScreen({
+  url,
+  size = 150,
+  navigation,
+}: Props) {
   const [uploading, setUploading] = useState(false);
+  const [submiting, setSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [note, setNote] = useState(""); // Add state for note
-  const [token, setToken] = useState(""); // Add state for token
-  const [prompt, setPrompt] = useState(""); // Add state for token
-  const [promptId, setPromptId] = useState(""); // Add state for token
-  const avatarSize = { height: size, width: size };
+  const [note, setNote] = useState("");
+  const [token, setToken] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [promptId, setPromptId] = useState("");
+  const photoSize = { height: size, width: size };
 
   // Fetch the token when the component mounts
   useEffect(() => {
@@ -148,29 +160,40 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
   }
 
   async function uploadDatabase() {
-    const response = await axios.post(
-      `${backendUrl}/photo/add-photo`,
-      {
-        prompt_id: promptId,
-        image_url: photoUrl,
-        note: note || "No note provided",
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      setSubmitting(true);
+      const response = await axios.post(
+        `${backendUrl}/photo/add-photo`,
+        {
+          prompt_id: promptId,
+          image_url: photoUrl,
+          note: note || "No note provided",
         },
-      }
-    );
-    console.log("Photo added to database:", response.data);
-
-    if (error.response) {
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-      console.error("Response headers:", error.response.headers);
-      Alert.alert(
-        "Upload failed",
-        `Server error: ${error.response.data.error || error.message}`
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+      console.log("Photo added to database:", response.data);
+
+      navigation.navigate("ShowEntry", {
+        photoUrl: photoUrl || "",
+        note: note || "",
+        prompt: prompt,
+      });
+    } catch (error) {
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        console.error("Response headers:", error.response.headers);
+        Alert.alert(
+          "Upload failed",
+          `Server error: ${error.response.data.error || error.message}`
+        );
+      }
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -180,11 +203,11 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
         <Image
           source={{ uri: photoUrl }}
           accessibilityLabel="Avatar"
-          style={[avatarSize, styles.avatar, styles.image]}
+          style={[photoSize, styles.avatar, styles.image]}
         />
       ) : (
         <View>
-          <View style={[avatarSize, styles.avatar, styles.noImage]} />
+          <View style={[photoSize, styles.avatar, styles.noImage]} />
           <View>
             <Button
               title={uploading ? "Uploading ..." : "Upload"}
@@ -205,9 +228,9 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
       </View>
       <View>
         <Button
-          title={uploading ? "Uploading ..." : "Upload"}
+          title={submiting ? "Submiting ..." : "Submit"}
           onPress={uploadDatabase}
-          disabled={uploading}
+          disabled={submiting}
         />
       </View>
     </View>

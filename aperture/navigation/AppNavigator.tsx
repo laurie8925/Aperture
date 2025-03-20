@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import StartingScreen from "../components/StartingScreen";
 import SignUp from "../components/SignUp";
@@ -9,6 +10,7 @@ import HomeScreen from "../components/HomeScreen";
 import AccountScreen from "../components/AccountScreen";
 import Login from "../components/Login";
 import PhotoEntryScreen from "../components/PhotoEntryScreen";
+import ShowEntryScreen from "../components/ShowEntryScreen";
 
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -54,10 +56,12 @@ function TabNavigator({ setIsAuthenticated }: AuthProps) {
 }
 
 function HomeNavigator() {
+  const Stack = createNativeStackNavigator<RootStackParamList>();
   return (
     <Stack.Navigator>
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="Entry" component={PhotoEntryScreen} />
+      <Stack.Screen name="ShowEntry" component={ShowEntryScreen} />
     </Stack.Navigator>
   );
 }
