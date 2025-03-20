@@ -14,9 +14,20 @@ export default function ShowEntryScreen({ route }: { route: any }) {
         style={[styles.avatar, styles.image, { width: 300, height: 300 }]}
       />
       {/* change the tags here */}
-      <Input label="Prompt" value={prompt} disabled />
-      <Input label="Note" value={note} disabled />
-      <Input label="Home" onPress={() => navigation.navigate("HomeMain")} />
+      <Text style={styles.textTitle}>Prompt</Text>
+      <Text>{prompt}</Text>
+      {note !== "" ? (
+        <View>
+          {" "}
+          <Text style={styles.textTitle}>Note</Text>
+          <Text>{note}</Text>
+        </View>
+      ) : (
+        ""
+      )}
+      {/* <Input label="Prompt" value={prompt} disabled /> */}
+      {/* <Input label="Note" value={note} disabled /> */}
+      <Button title="Home" onPress={() => navigation.navigate("HomeMain")} />
     </View>
   );
 }
@@ -44,5 +55,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  textTitle: {
+    fontSize: 20,
   },
 });
