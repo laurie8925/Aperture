@@ -123,22 +123,6 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
         image_url: imageUrl,
         note: note || "No note provided",
       });
-
-      const response = await axios.post(
-        `${backendUrl}/photo/add-photo`,
-        {
-          prompt_id: promptId,
-          image_url: imageUrl,
-          note: note || "No note provided",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("Photo added to database:", response.data);
     } catch (error) {
       if (error.response) {
         console.error("Response data:", error.response.data);
@@ -160,6 +144,33 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
       }
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function uploadDatabase() {
+    const response = await axios.post(
+      `${backendUrl}/photo/add-photo`,
+      {
+        prompt_id: promptId,
+        image_url: photoUrl,
+        note: note || "No note provided",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("Photo added to database:", response.data);
+
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+      Alert.alert(
+        "Upload failed",
+        `Server error: ${error.response.data.error || error.message}`
+      );
     }
   }
 
@@ -190,6 +201,13 @@ export default function PhotoEntryScreen({ url, size = 150 }: Props) {
           value={note}
           onChangeText={(text) => setNote(text)}
           placeholder="Add a note for this photo"
+        />
+      </View>
+      <View>
+        <Button
+          title={uploading ? "Uploading ..." : "Upload"}
+          onPress={uploadDatabase}
+          disabled={uploading}
         />
       </View>
     </View>

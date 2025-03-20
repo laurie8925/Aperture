@@ -34,8 +34,6 @@ router.post("/add-photo", authenticateToken, async (req, res) => {
       .eq("id", prompt_id)
       .single();
 
-    console.log("Prompt query result:", { promptData, promptError });
-
     if (promptError || !promptData) {
       return res
         .status(400)
