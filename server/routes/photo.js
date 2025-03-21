@@ -106,6 +106,6 @@ router.get("/today", authenticateToken, async (req, res) => {
   }
 });
 
-router("/user/entries", authenticateToken, photoControllers.getAllPhotos);
+router.get("/user/entries", authenticateToken, photoControllers.getAllPhotos);
 
 export default router;
