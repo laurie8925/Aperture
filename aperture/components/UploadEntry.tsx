@@ -4,16 +4,17 @@ import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { supabase } from "../utils/supabase";
+import { NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "../types/NavigationType";
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 interface Props {
   token: string;
   promptId: string;
-  navigation: NavigationProp<RootStackParamList, "PhotoEntry">;
+  navigation: NavigationProp<RootStackParamList>;
   prompt: string;
   size: number;
-  checkEntry: () => Promise<boolean>; // Add checkEntry to props
 }
 
 export default function UploadEntry({
@@ -22,7 +23,6 @@ export default function UploadEntry({
   navigation,
   prompt,
   size,
-  checkEntry,
 }: Props) {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);

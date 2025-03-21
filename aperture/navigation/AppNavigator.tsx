@@ -3,6 +3,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import { NavigationProp } from "@react-navigation/native";
+// import { RootStackParamList } from "../types/NavigationType";
 
 import StartingScreen from "../components/StartingScreen";
 import SignUp from "../components/SignUp";
@@ -15,7 +17,11 @@ import ShowEntryScreen from "../components/ShowEntryScreen";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { onAuthChange } from "../utils/authEvent";
+import {
+  TabParamList,
+  RootStackParamList,
+  AuthStackParamList,
+} from "../types/NavigationType";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +33,7 @@ interface AuthProps {
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 function TabNavigator({ setIsAuthenticated }: AuthProps) {
+  const Tab = createBottomTabNavigator<TabParamList>();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -67,6 +74,7 @@ function HomeNavigator() {
 }
 
 function AuthStack({ setIsAuthenticated }: AuthProps) {
+  const Stack = createNativeStackNavigator<AuthStackParamList>();
   return (
     <Stack.Navigator initialRouteName="StartingScreen">
       <Stack.Screen

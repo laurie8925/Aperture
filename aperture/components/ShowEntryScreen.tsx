@@ -1,12 +1,21 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import React from "react";
-import { useNavigation, RouteProp } from "@react-navigation/native";
+import {
+  useNavigation,
+  NavigationProp,
+  RouteProp,
+} from "@react-navigation/native";
+import { RootStackParamList } from "../types/NavigationType";
 
-export default function ShowEntryScreen({ route }: any) {
-  //props from navigation in photoentry screen
-  const navigation = useNavigation();
-  const { photoUrl, note, prompt } = route.params;
+interface Props {
+  navigation: NavigationProp<RootStackParamList>;
+  route: RouteProp<RootStackParamList, "ShowEntry">;
+}
+
+export default function ShowEntryScreen({ route }: Props) {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { photoUrl, note, prompt } = route.params; //props from navigation in photoentry screen
   return (
     <View style={styles.container}>
       <Image
@@ -21,11 +30,8 @@ export default function ShowEntryScreen({ route }: any) {
           <Text style={styles.textTitle}>Note</Text>
           <Text>{note}</Text>
         </View>
-      ) : (
-        ""
-      )}
-      {/* <Input label="Prompt" value={prompt} disabled /> */}
-      {/* <Input label="Note" value={note} disabled /> */}
+      ) : null}
+
       <Button title="Home" onPress={() => navigation.navigate("HomeMain")} />
     </View>
   );

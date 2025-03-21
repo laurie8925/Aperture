@@ -1,25 +1,15 @@
 import { View } from "react-native";
-import { usePhotoEntry } from "./usePhotoEntry";
+import { usePhotoEntry } from "../hooks/usePhotoEntry";
 import UploadEntry from "./UploadEntry";
-import { useEffect } from "react";
+import { RootStackParamList } from "../types/NavigationType";
+import { NavigationProp } from "@react-navigation/native";
 
-export default function PhotoEntryScreen({ navigation }) {
-  const { token, prompt, promptId, existingEntry, checkEntry } =
-    usePhotoEntry(navigation);
+interface Props {
+  navigation: NavigationProp<RootStackParamList>;
+}
 
-  useEffect(() => {
-    console.log(
-      "PhotoEntryScreen - Rendered with existingEntry:",
-      existingEntry
-    );
-  }, [existingEntry]);
-
-  if (existingEntry) {
-    console.log(
-      "PhotoEntryScreen - existingEntry is true, should not render UploadEntry"
-    );
-    return null;
-  }
+export default function PhotoEntryScreen({ navigation }: Props) {
+  const { token, prompt, promptId } = usePhotoEntry(navigation);
 
   return (
     <View>
@@ -29,7 +19,6 @@ export default function PhotoEntryScreen({ navigation }) {
         navigation={navigation}
         prompt={prompt}
         size={150}
-        checkEntry={checkEntry}
       />
     </View>
   );
