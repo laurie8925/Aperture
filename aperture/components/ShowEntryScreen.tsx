@@ -1,9 +1,9 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, RouteProp } from "@react-navigation/native";
 
-export default function ShowEntryScreen({ route }: { route: any }) {
+export default function ShowEntryScreen({ route }: any) {
   //props from navigation in photoentry screen
   const navigation = useNavigation();
   const { photoUrl, note, prompt } = route.params;
@@ -18,7 +18,6 @@ export default function ShowEntryScreen({ route }: { route: any }) {
       <Text>{prompt}</Text>
       {note !== "" ? (
         <View>
-          {" "}
           <Text style={styles.textTitle}>Note</Text>
           <Text>{note}</Text>
         </View>

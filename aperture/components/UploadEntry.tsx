@@ -1,59 +1,46 @@
-import { useState, useEffect } from "react";
-import { supabase } from "../utils/supabase";
+import { useState } from "react";
 import { StyleSheet, View, Alert, Image } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
+import { supabase } from "../utils/supabase";
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 interface Props {
+  token: string;
+  promptId: string;
+  navigation: NavigationProp<RootStackParamList, "PhotoEntry">;
+  prompt: string;
   size: number;
-  url: string | null;
-  onUpload: (filePath: string) => void;
-  promptId: string; // Add promptId as a prop
+  checkEntry: () => Promise<boolean>; // Add checkEntry to props
 }
 
-export default function PhotoEntryScreen({
-  url,
-  size = 150,
-  onUpload,
+export default function UploadEntry({
+  token,
   promptId,
+  navigation,
+  prompt,
+  size,
+  checkEntry,
 }: Props) {
   const [uploading, setUploading] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const avatarSize = { height: size, width: size };
+  const [submitting, setSubmitting] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [note, setNote] = useState("");
 
-  useEffect(() => {
-    console.log("Initial url:", url);
-    if (url) downloadImage(url);
-  }, [url]);
+  const photoSize = { height: size, width: size };
 
-  async function downloadImage(path: string) {
-    try {
-      const { data, error } = await supabase.storage
-        .from("user-photos")
-        .getPublicUrl(path);
-
-      if (error) throw error;
-      setAvatarUrl(data.publicUrl);
-    } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert("Failed to load image", error.message);
-      }
-    }
-  }
-
-  async function uploadAvatar() {
+  async function uploadImage() {
     try {
       setUploading(true);
 
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         allowsMultipleSelection: false,
         allowsEditing: true,
-        quality: 1,
+        quality: 0.5,
+        aspect: [1, 1],
         exif: false,
       });
 
@@ -62,58 +49,107 @@ export default function PhotoEntryScreen({
       }
 
       const image = result.assets[0];
-      console.log(image);
-
-      // Convert image to array buffer for upload
       const arraybuffer = await fetch(image.uri).then((res) =>
         res.arrayBuffer()
       );
       const fileExt = image.uri?.split(".").pop()?.toLowerCase() ?? "jpeg";
       const path = `${Date.now()}.${fileExt}`;
 
-      // Upload image to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from("user-photos")
         .upload(path, arraybuffer, {
           contentType: image.mimeType ?? "image/jpeg",
         });
 
-      console.log("Upload response:", { data, error: uploadError });
+      if (uploadError) throw uploadError;
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      const { data: publicUrlData, error: urlError } = await supabase.storage
+        .from("user-photos")
+        .getPublicUrl(data.path);
 
-      console.log("Upload successful, data:", data);
+      if (urlError) throw urlError;
 
-      // Update the UI with the new image
-      await downloadImage(data.path);
-      onUpload(data.path);
+      const imageUrl = publicUrlData.publicUrl;
+      setPhotoUrl(imageUrl);
+
+      console.log("Image URL:", imageUrl);
     } catch (error) {
-      if (error instanceof Error) {
-        Alert.alert("Upload failed", error.message);
-      }
+      console.error("Upload error:", error.message);
+      Alert.alert("Upload failed", error.message);
     } finally {
       setUploading(false);
     }
   }
 
+  async function uploadDatabase() {
+    try {
+      setSubmitting(true);
+      console.log("uploadDatabase - Token:", token);
+      console.log("uploadDatabase - Submitting with prompt_id:", promptId);
+      const response = await axios.post(
+        `${backendUrl}/photo/add-photo`,
+        {
+          prompt_id: promptId,
+          image_url: photoUrl,
+          note: note || "No note provided",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log("uploadDatabase - Photo added:", response.data);
+
+      navigation.replace("ShowEntry", {
+        photoUrl: photoUrl || "",
+        note: note || "",
+        prompt: prompt,
+      });
+    } catch (error) {
+      console.error(
+        "uploadDatabase - Error:",
+        error.response?.data || error.message
+      );
+      Alert.alert(
+        "Submit failed",
+        error.response?.data?.error || error.message
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
   return (
     <View>
-      {avatarUrl ? (
+      {photoUrl ? (
         <Image
-          source={{ uri: avatarUrl }}
+          source={{ uri: photoUrl }}
           accessibilityLabel="Avatar"
-          style={[avatarSize, styles.avatar, styles.image]}
+          style={[photoSize, styles.avatar, styles.image]}
         />
       ) : (
-        <View style={[avatarSize, styles.avatar, styles.noImage]} />
+        <View>
+          <View style={[photoSize, styles.avatar, styles.noImage]} />
+          <View>
+            <Button
+              title={uploading ? "Uploading ..." : "Upload"}
+              onPress={uploadImage}
+              disabled={uploading}
+            />
+          </View>
+        </View>
       )}
+      <View style={styles.inputContainer}>
+        <Input
+          label="Note"
+          value={note}
+          onChangeText={(text) => setNote(text)}
+          placeholder="Add a note for this photo"
+        />
+      </View>
       <View>
         <Button
-          title={uploading ? "Uploading ..." : "Upload"}
-          onPress={uploadAvatar}
-          disabled={uploading}
+          title={submitting ? "Submitting ..." : "Submit"}
+          onPress={uploadDatabase}
+          disabled={submitting}
         />
       </View>
     </View>
@@ -136,5 +172,8 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderColor: "rgb(200, 200, 200)",
     borderRadius: 5,
+  },
+  inputContainer: {
+    marginVertical: 10,
   },
 });
