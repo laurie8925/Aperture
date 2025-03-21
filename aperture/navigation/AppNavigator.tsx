@@ -83,8 +83,13 @@ function AuthStack({ setIsAuthenticated }: AuthProps) {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Login"
-        children={(props) => <Login setIsAuthenticated={setIsAuthenticated} />}
+        name="LogIn"
+        children={({ navigation }) => (
+          <Login
+            setIsAuthenticated={setIsAuthenticated}
+            navigation={navigation}
+          />
+        )}
         options={{ headerShown: false }}
       />
       <Stack.Screen

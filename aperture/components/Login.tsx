@@ -3,13 +3,15 @@ import { View, StyleSheet, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError } from "axios"; // Import AxiosError
 import { Button, Input } from "@rneui/themed";
-import { supabase } from "../utils/supabase";
+import { AuthStackParamList } from "../types/NavigationType";
+import { NavigationProp } from "@react-navigation/native";
 
 interface LoginProps {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  navigation: NavigationProp<AuthStackParamList>;
 }
 
-const Login = ({ setIsAuthenticated }: LoginProps) => {
+const Login = ({ setIsAuthenticated, navigation }: LoginProps) => {
   const [user, setUser] = useState({});
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
@@ -114,6 +116,7 @@ const Login = ({ setIsAuthenticated }: LoginProps) => {
         onChangeText={(text) => setPassword(text)}
       />
       <Button title="Login" onPress={handleLogin} />
+      <Button title="Sign Up" onPress={() => navigation.navigate("SignUp")} />
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
