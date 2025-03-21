@@ -4,11 +4,6 @@ import jwt from "jsonwebtoken";
 const { SUPABASE_JWT_SECRET } = process.env;
 
 function authenticateToken(req, res, next) {
-  console.log("authenticateToken middleware called for:", req.url);
-  console.log(
-    "SUPABASE_JWT_SECRET:",
-    SUPABASE_JWT_SECRET ? "Secret exists" : "Secret missing"
-  );
   if (!req.headers.authorization) {
     return res.status(401).json({ message: "No JWT provided" });
   }

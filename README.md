@@ -18,7 +18,6 @@ Anyone who would like to start relfecting on their days.
 - Randomized daily prompt for users to reflect on their day
 - Daily prompt are answered with one photo! (with the option to add note)
 - Display most recent entries on Home Page
-- Calendar showcase days with entry, user can click into it to see the specific day entry
 - User can update their account details, reset password, and delete accounts
 
 ## Implementation
@@ -38,7 +37,6 @@ Backend
 Database & File Storage
 
 - MySQL
-- Firebase (for photos)
 
 Authentication
 
@@ -92,11 +90,12 @@ Home Page: display the most recent entry and today's prompt (nav) -> new entry, 
 Entry Page: upload photo for prompt of the day (nav) -> individual card page, back (to home page)
 Indiviudal card page: shows that specific day entry, with prompt, photo, and notes (nav) -> home page
 
-Calendar page: display what days had photo entry, and can click into it to it's individual card page
-
 Account page: showcase some account stats navigate to account detail page (nav) -> account detail page
 Account detail apge: shows the user's name, email, creation date, reset password and edit profiles (nav) -> edit profile page
 Edit profile page: can edit name, email, icon, and option to delete account nav -> delete module, account detail page
+
+Optional:
+Calendar page: display what days had photo entry, and can click into it to it's individual card page
 
 ### Mockups
 
@@ -116,17 +115,20 @@ Create user
 
 Login
 
-- GET /auth/login
+- GET /login
 
 Prompt
 
 - GET /prompt/today
-- Photos
-- POST /photos
-- GET /photos/recent
-- GET /photos/:photoId
-- PUT /photos/:photoId
-- GET /photos/calendar
+- GET /prompt
+
+Photos
+
+- POST /photo/add-photo
+- GET /photo/today
+- GET /photos/:userId
+- GET /photo/:photoId
+- PUT /photo/:photoId
 
 Users
 
@@ -199,3 +201,4 @@ Deployment:
 ## Future Implementations
 
 Connect with other users, and be able to see other's entry!
+Calendar showcase days with entry, user can click into it to see the specific day entry
