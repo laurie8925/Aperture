@@ -3,6 +3,7 @@ import express from "express";
 import { createClient } from "@supabase/supabase-js";
 import authenticateToken from "../middleware/authMiddleware.js";
 import supabase from "../config/supabase.js";
+import * as photoControllers from "../controllers/photo.js";
 
 const router = express.Router();
 
@@ -78,7 +79,6 @@ router.get("/today", authenticateToken, async (req, res) => {
     }
 
     const user_id = req.user?.userId;
-    const requestId = Math.random().toString(36).substring(7);
     console.log(`API /today - user_id:`, user_id);
     console.log(`API /today - prompt_id:`, prompt_id);
 
@@ -105,5 +105,7 @@ router.get("/today", authenticateToken, async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router("/user/entries", authenticateToken, photoControllers.getAllPhotos);
 
 export default router;

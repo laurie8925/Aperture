@@ -34,7 +34,7 @@ export const usePhotoEntry = (
           navigation.navigate("ShowEntry", {
             photoUrl: entryResponse.data.image_url,
             note: entryResponse.data.note || "",
-            prompt: prompt,
+            prompt: entryResponse.data.prompt,
           });
           return true;
         } else {
