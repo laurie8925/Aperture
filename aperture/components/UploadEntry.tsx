@@ -92,6 +92,7 @@ export default function UploadEntry({
           prompt_id: promptId,
           image_url: photoUrl,
           note: note || "No note provided",
+          prompt: prompt,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +100,7 @@ export default function UploadEntry({
       );
       console.log("uploadDatabase - Photo added:", response.data);
 
-      navigation.replace("ShowEntry", {
+      navigation.navigate("ShowEntry", {
         photoUrl: photoUrl || "",
         note: note || "",
         prompt: prompt,

@@ -12,7 +12,7 @@ const formattedDate = date.toISOString().split("T")[0];
 
 router.post("/add-photo", authenticateToken, async (req, res) => {
   try {
-    const { prompt_id, image_url, note } = req.body;
+    const { prompt_id, image_url, note, prompt } = req.body;
     const user_id = req.user?.userId;
 
     console.log("API /add-photo - user_id:", user_id);
@@ -47,6 +47,7 @@ router.post("/add-photo", authenticateToken, async (req, res) => {
         image_url,
         note,
         date: formattedDate,
+        prompt,
       })
       .select()
       .single();
