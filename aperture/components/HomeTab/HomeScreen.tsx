@@ -1,11 +1,14 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import PhotoList from "./PhotoList";
+import { RootStackParamList } from "../../types/NavigationType";
+import { NavigationProp } from "@react-navigation/native";
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
+interface HomeScreenProps {
+  navigation: NavigationProp<RootStackParamList>;
+}
 
+export default function HomeScreen({ navigation }: HomeScreenProps) {
   return (
     <View style={styles.container}>
       <Text>Home Screen</Text>

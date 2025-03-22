@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { supabase, storeToken } from "../utils/supabase";
+import { supabase, storeToken } from "../../utils/supabase";
 import { Button, Input } from "@rneui/themed";
-import { AuthStackParamList } from "../types/NavigationType";
+import { AuthStackParamList } from "../../types/NavigationType";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 export default function Auth() {

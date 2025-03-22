@@ -7,12 +7,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import { RootStackParamList } from "../types/NavigationType";
 
 import StartingScreen from "../components/Auth/StartingScreen";
-import SignUp from "../components/SignUp";
+import SignUp from "../components/Auth/SignUp";
 import HomeScreen from "../components/HomeTab/HomeScreen";
 import AccountScreen from "../components/AccountScreen";
-import Login from "../components/Login";
+import Login from "../components/Auth/Login";
 import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
-import ShowEntryScreen from "../components/ShowEntryScreen";
+import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
+import UploadEntry from "../components/HomeTab/UploadEntry";
 
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -69,6 +70,7 @@ function HomeNavigator() {
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="Entry" component={PhotoEntryScreen} />
       <Stack.Screen name="ShowEntry" component={ShowEntryScreen} />
+      <Stack.Screen name="UploadEntry" component={UploadEntry} />
     </Stack.Navigator>
   );
 }

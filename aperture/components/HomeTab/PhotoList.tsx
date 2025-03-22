@@ -15,7 +15,7 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 export default function PhotoList({ navigation }: Props) {
   const [photos, setPhotos] = useState([]);
-  const { prompt, token, todayEntry } = usePhotoEntry(navigation);
+  const { prompt, token, todayEntry, promptId } = usePhotoEntry(navigation);
 
   useEffect(() => {
     async function getPhotos() {
@@ -50,14 +50,23 @@ export default function PhotoList({ navigation }: Props) {
       {todayEntry ? (
         <FlatList
           data={photos}
-          renderItem={({ item }) => <PhotoCard photo={item} />}
+          renderItem={({ item }) => (
+            <PhotoCard photo={item} navigation={navigation} />
+          )}
         />
       ) : (
         <View>
-          <PromptCard prompt={prompt} navigation={navigation} />
+          <PromptCard
+            token={token}
+            promptId={promptId}
+            prompt={prompt}
+            navigation={navigation}
+          />
           <FlatList
             data={photos}
-            renderItem={({ item }) => <PhotoCard photo={item} />}
+            renderItem={({ item }) => (
+              <PhotoCard photo={item} navigation={navigation} />
+            )}
           />
         </View>
       )}
