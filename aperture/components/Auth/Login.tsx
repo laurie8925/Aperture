@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError } from "axios"; // Import AxiosError
 import { Button, Input } from "@rneui/themed";
-import { AuthStackParamList } from "../types/NavigationType";
+import { AuthStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
 
 interface LoginProps {

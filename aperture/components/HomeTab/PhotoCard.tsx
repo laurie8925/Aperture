@@ -1,9 +1,11 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { TouchableOpacity, Image } from "react-native";
+import { RootStackParamList } from "../../types/NavigationType";
+import { NavigationProp } from "@react-navigation/native";
 
 // define props
-interface Props {
+interface PhotoCardProps {
   photo: {
     id?: string;
     image_url: string;
@@ -12,11 +14,20 @@ interface Props {
     date: string;
     prompt: string;
   };
+  navigation: NavigationProp<RootStackParamList>;
   // onPress: () => void;
 }
 
-const PhotoCard = ({ photo }: Props) => (
-  <TouchableOpacity>
+const PhotoCard = ({ photo, navigation }: PhotoCardProps) => (
+  <TouchableOpacity
+    onPress={() =>
+      navigation.navigate("ShowEntry", {
+        photoUrl: photo.image_url,
+        prompt: photo.prompt,
+        note: photo.note || "",
+      })
+    }
+  >
     <View>
       {photo.image_url ? (
         <Image

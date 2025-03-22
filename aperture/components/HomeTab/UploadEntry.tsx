@@ -4,26 +4,21 @@ import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { supabase } from "../../utils/supabase";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../types/NavigationType";
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
+type UploadEntryRouteProp = RouteProp<RootStackParamList, "UploadEntry">;
+
 interface Props {
-  token: string;
-  promptId: string;
+  route: UploadEntryRouteProp;
   navigation: NavigationProp<RootStackParamList>;
-  prompt: string;
-  size: number;
 }
 
-export default function UploadEntry({
-  token,
-  promptId,
-  navigation,
-  prompt,
-  size,
-}: Props) {
+export default function UploadEntry({ route, navigation }: Props) {
+  const { token, promptId, prompt, size } = route.params; // Extract params from route
+
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -34,9 +29,8 @@ export default function UploadEntry({
   async function uploadImage() {
     try {
       setUploading(true);
-
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
@@ -74,18 +68,21 @@ export default function UploadEntry({
 
       console.log("Image URL:", imageUrl);
     } catch (error) {
-      console.error("Upload error:", error.message);
-      Alert.alert("Upload failed", error.message);
+      console.error("Upload error:", error);
+      Alert.alert("Upload failed", String(error));
     } finally {
       setUploading(false);
     }
   }
 
   async function uploadDatabase() {
+    if (!photoUrl) {
+      Alert.alert("Error", "Please upload an image first");
+      return;
+    }
+
     try {
       setSubmitting(true);
-      console.log("uploadDatabase - Token:", token);
-      console.log("uploadDatabase - Submitting with prompt_id:", promptId);
       const response = await axios.post(
         `${backendUrl}/photo/add-photo`,
         {
@@ -101,23 +98,21 @@ export default function UploadEntry({
       console.log("uploadDatabase - Photo added:", response.data);
 
       navigation.navigate("ShowEntry", {
-        photoUrl: photoUrl || "",
+        photoUrl: photoUrl,
         note: note || "",
         prompt: prompt,
       });
     } catch (error) {
-      console.error(
-        "uploadDatabase - Error:",
-        error.response?.data || error.message
-      );
+      console.error("uploadDatabase - Error:", error.response?.data || error);
       Alert.alert(
         "Submit failed",
-        error.response?.data?.error || error.message
+        error.response?.data?.error || String(error)
       );
     } finally {
       setSubmitting(false);
     }
   }
+
   return (
     <View>
       {photoUrl ? (
@@ -129,13 +124,11 @@ export default function UploadEntry({
       ) : (
         <View>
           <View style={[photoSize, styles.avatar, styles.noImage]} />
-          <View>
-            <Button
-              title={uploading ? "Uploading ..." : "Upload"}
-              onPress={uploadImage}
-              disabled={uploading}
-            />
-          </View>
+          <Button
+            title={uploading ? "Uploading ..." : "Upload"}
+            onPress={uploadImage}
+            disabled={uploading}
+          />
         </View>
       )}
       <View style={styles.inputContainer}>
@@ -146,13 +139,11 @@ export default function UploadEntry({
           placeholder="Add a note for this photo"
         />
       </View>
-      <View>
-        <Button
-          title={submitting ? "Submitting ..." : "Submit"}
-          onPress={uploadDatabase}
-          disabled={submitting}
-        />
-      </View>
+      <Button
+        title={submitting ? "Submitting ..." : "Submit"}
+        onPress={uploadDatabase}
+        disabled={submitting || !photoUrl}
+      />
     </View>
   );
 }
