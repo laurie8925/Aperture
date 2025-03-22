@@ -3,9 +3,9 @@ import { StyleSheet, View, Alert, Image } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
-import { supabase } from "../utils/supabase";
+import { supabase } from "../../utils/supabase";
 import { NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../types/NavigationType";
+import { RootStackParamList } from "../../types/NavigationType";
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
@@ -92,6 +92,7 @@ export default function UploadEntry({
           prompt_id: promptId,
           image_url: photoUrl,
           note: note || "No note provided",
+          prompt: prompt,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +100,7 @@ export default function UploadEntry({
       );
       console.log("uploadDatabase - Photo added:", response.data);
 
-      navigation.replace("ShowEntry", {
+      navigation.navigate("ShowEntry", {
         photoUrl: photoUrl || "",
         note: note || "",
         prompt: prompt,

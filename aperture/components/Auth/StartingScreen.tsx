@@ -2,7 +2,7 @@ import { View, Text, Button, StyleSheet } from "react-native";
 import React from "react";
 import LogIn from "./Login";
 import { useNavigation } from "@react-navigation/native";
-import { AuthStackParamList } from "../types/NavigationType";
+import { AuthStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
 
 const StartingScreen = () => {

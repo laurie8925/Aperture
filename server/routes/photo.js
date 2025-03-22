@@ -3,6 +3,7 @@ import express from "express";
 import { createClient } from "@supabase/supabase-js";
 import authenticateToken from "../middleware/authMiddleware.js";
 import supabase from "../config/supabase.js";
+import * as photoControllers from "../controllers/photo.js";
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const formattedDate = date.toISOString().split("T")[0];
 
 router.post("/add-photo", authenticateToken, async (req, res) => {
   try {
-    const { prompt_id, image_url, note } = req.body;
+    const { prompt_id, image_url, note, prompt } = req.body;
     const user_id = req.user?.userId;
 
     console.log("API /add-photo - user_id:", user_id);
@@ -47,6 +48,7 @@ router.post("/add-photo", authenticateToken, async (req, res) => {
         image_url,
         note,
         date: formattedDate,
+        prompt,
       })
       .select()
       .single();
@@ -77,7 +79,6 @@ router.get("/today", authenticateToken, async (req, res) => {
     }
 
     const user_id = req.user?.userId;
-    const requestId = Math.random().toString(36).substring(7);
     console.log(`API /today - user_id:`, user_id);
     console.log(`API /today - prompt_id:`, prompt_id);
 
@@ -104,5 +105,7 @@ router.get("/today", authenticateToken, async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router.get("/user/entries", authenticateToken, photoControllers.getAllPhotos);
 
 export default router;

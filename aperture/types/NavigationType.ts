@@ -13,6 +13,10 @@ export type RootStackParamList = {
     note: string;
     prompt: string;
   };
+  UploadEntry:{ 
+    prompt:string;
+    promptId:string
+  }
 };
 
 export type AuthStackParamList = {

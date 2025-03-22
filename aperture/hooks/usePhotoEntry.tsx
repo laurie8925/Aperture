@@ -10,91 +10,70 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 export const usePhotoEntry = (
   navigation: NavigationProp<RootStackParamList>
 ) => {
+  //get token, prompt, and prompt id
+  //check if todayentry is submited
   const [token, setToken] = useState("");
   const [prompt, setPrompt] = useState("");
   const [promptId, setPromptId] = useState("");
-  const [existingEntry, setExistingEntry] = useState(false);
+  const [todayEntry, setTodayEntry] = useState(null);
   const [error, setError] = useState("");
 
-  const checkEntry = useCallback(
+  const checkTodayEntry = useCallback(
     async (currentPromptId: string) => {
       try {
         const storedToken = token;
         if (!storedToken) throw new Error("No token found.");
 
-        //get today's entry
         const entryResponse = await axios.get(`${backendUrl}/photo/today`, {
           params: { prompt_id: currentPromptId },
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
-        //if entry exist, then navigate to showentry
         if (entryResponse.data && entryResponse.data !== false) {
-          setExistingEntry(true);
-          navigation.navigate("ShowEntry", {
-            photoUrl: entryResponse.data.image_url,
-            note: entryResponse.data.note || "",
-            prompt: prompt,
-          });
+          setTodayEntry(entryResponse.data);
           return true;
-        } else {
-          setExistingEntry(false);
-          return false;
         }
+        return false;
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
-        } else {
-          throw error;
         }
         return false;
       }
     },
-    [navigation, token, prompt]
+    [token]
   );
 
   useEffect(() => {
     const initialize = async () => {
       try {
-        //get token
         const storedToken = await AsyncStorage.getItem("token");
         if (!storedToken)
           throw new Error("No token found. Please log in first.");
         setToken(storedToken);
 
-        //get prompt
         const promptResponse = await axios.get(`${backendUrl}/prompts/today`);
-        console.log("Prompt API response:", promptResponse.data);
         if (!promptResponse.data || !promptResponse.data.id) {
           throw new Error("Failed to fetch prompt: No prompt ID found.");
         }
         setPromptId(promptResponse.data.id);
         setPrompt(promptResponse.data.prompt);
-
-        //error
       } catch (error) {
         if (error instanceof Error) {
-          console.error(
-            "Error in calling token and prompt for photoentry:",
-            error.message
-          );
           setError(error.message);
-        } else {
-          throw error;
         }
       }
     };
     initialize();
+    console.log("initialize called");
   }, [navigation]);
 
-  //make sure checkEntry runs after setting states
   useEffect(() => {
     if (promptId) {
-      checkEntry(promptId);
+      checkTodayEntry(promptId);
     }
-  }, [promptId, checkEntry]);
+    console.log("check today entry called");
+  }, [promptId, checkTodayEntry]);
 
-  console.log(error);
-
-  return { token, prompt, promptId, existingEntry, checkEntry };
+  return { token, prompt, promptId, todayEntry, checkTodayEntry };
 };

@@ -6,12 +6,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // import { NavigationProp } from "@react-navigation/native";
 // import { RootStackParamList } from "../types/NavigationType";
 
-import StartingScreen from "../components/StartingScreen";
+import StartingScreen from "../components/Auth/StartingScreen";
 import SignUp from "../components/SignUp";
-import HomeScreen from "../components/HomeScreen";
+import HomeScreen from "../components/HomeTab/HomeScreen";
 import AccountScreen from "../components/AccountScreen";
 import Login from "../components/Login";
-import PhotoEntryScreen from "../components/PhotoEntryScreen";
+import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
 import ShowEntryScreen from "../components/ShowEntryScreen";
 
 import Icon from "react-native-vector-icons/FontAwesome";
