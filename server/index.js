@@ -1,3 +1,7 @@
+/*TODO:
+- add /user route
+- update user route to get data from public profile database 
+- add route to index*/
 import express from "express";
 import cors from "cors";
 import "dotenv/config";

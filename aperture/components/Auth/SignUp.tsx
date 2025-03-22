@@ -1,3 +1,8 @@
+/*TODO: 
+- add "NAME" input for calling backend
+- move supabase signUp call to backend
+- call backend /user/signup with email, name, and password */
+
 import React, { useState } from "react";
 import { Alert, StyleSheet, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";

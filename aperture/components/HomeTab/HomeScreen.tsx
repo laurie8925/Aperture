@@ -1,3 +1,6 @@
+/* FIXME:
+- currently the name is ""
+- update backend to get access to public user database for their name*/
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PhotoList from "./PhotoList";
@@ -6,15 +9,17 @@ import { NavigationProp } from "@react-navigation/native";
 
 interface HomeScreenProps {
   navigation: NavigationProp<RootStackParamList>;
+  name: string;
 }
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
+export default function HomeScreen({ navigation, name }: HomeScreenProps) {
   return (
     <View style={styles.container}>
       <Text>Home Screen</Text>
-      <Text onPress={() => navigation.navigate("Entry")}>
+      <Text>Welcome, {name}!</Text>
+      {/* <Text onPress={() => navigation.navigate("Entry")}>
         Go to Photo Entry
-      </Text>
+      </Text> */}
       <PhotoList navigation={navigation} />
     </View>
   );

@@ -6,17 +6,17 @@ export type TabParamList = {
 };
 
 export type RootStackParamList = {
-  HomeMain: undefined;
+  Home: undefined;
   Entry: undefined;
   ShowEntry: {
     photoUrl: string;
     note: string;
     prompt: string;
   };
-  UploadEntry:{ 
-    prompt:string;
-    promptId:string
-  }
+  UploadEntry: {
+    prompt: string;
+    promptId: string;
+  };
 };
 
 export type AuthStackParamList = {

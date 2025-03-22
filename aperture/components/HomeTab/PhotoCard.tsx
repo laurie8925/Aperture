@@ -29,15 +29,16 @@ const PhotoCard = ({ photo, navigation }: PhotoCardProps) => (
     }
   >
     <View>
+      <Text>{photo.date}</Text>
       {photo.image_url ? (
         <Image
           source={{ uri: photo.image_url }}
           style={{ width: 100, height: 100 }}
         />
       ) : (
-        <Text>No Entry Yet</Text>
+        ""
       )}
-      <Text>{photo.prompt}</Text>
+      <Text>Prompt: {photo.prompt}</Text>
       {photo.note && <Text>{photo.note}</Text>}
     </View>
   </TouchableOpacity>
