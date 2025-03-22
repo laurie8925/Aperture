@@ -6,17 +6,17 @@ import { TouchableOpacity, Image } from "react-native";
 interface Props {
   photo: {
     id?: string;
-    image_url?: string; // Changed from url to match PhotoList usage
-    prompt_id?: string;
+    image_url: string;
+    prompt_id: string;
     note?: string;
-    date?: string;
+    date: string;
+    prompt: string;
   };
-  prompt: string;
-  onPress: () => void;
+  // onPress: () => void;
 }
 
-const PhotoCard = ({ photo, prompt, onPress }: Props) => (
-  <TouchableOpacity onPress={onPress}>
+const PhotoCard = ({ photo }: Props) => (
+  <TouchableOpacity>
     <View>
       {photo.image_url ? (
         <Image
@@ -26,7 +26,7 @@ const PhotoCard = ({ photo, prompt, onPress }: Props) => (
       ) : (
         <Text>No Entry Yet</Text>
       )}
-      <Text>{prompt}</Text>
+      <Text>{photo.prompt}</Text>
       {photo.note && <Text>{photo.note}</Text>}
     </View>
   </TouchableOpacity>

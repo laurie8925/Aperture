@@ -3,9 +3,9 @@ import { StyleSheet, View, Alert, Image } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
-import { supabase } from "../utils/supabase";
+import { supabase } from "../../utils/supabase";
 import { NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../types/NavigationType";
+import { RootStackParamList } from "../../types/NavigationType";
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 

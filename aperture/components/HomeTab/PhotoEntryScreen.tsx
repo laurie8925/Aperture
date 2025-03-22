@@ -1,7 +1,7 @@
 import { View } from "react-native";
-import { usePhotoEntry } from "../hooks/usePhotoEntry";
+import { usePhotoEntry } from "../../hooks/usePhotoEntry";
 import UploadEntry from "./UploadEntry";
-import { RootStackParamList } from "../types/NavigationType";
+import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
 
 interface Props {

@@ -1,10 +1,11 @@
 import { View, Text, FlatList } from "react-native";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { usePhotoEntry } from "../hooks/usePhotoEntry";
-import { RootStackParamList } from "../types/NavigationType";
+import { usePhotoEntry } from "../../hooks/usePhotoEntry";
+import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
 import PhotoCard from "./PhotoCard";
+import PromptCard from "./PromptCard";
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;
@@ -14,7 +15,7 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 export default function PhotoList({ navigation }: Props) {
   const [photos, setPhotos] = useState([]);
-  const { token, prompt } = usePhotoEntry(navigation);
+  const { prompt, token, todayEntry } = usePhotoEntry(navigation);
 
   useEffect(() => {
     async function getPhotos() {
@@ -34,25 +35,37 @@ export default function PhotoList({ navigation }: Props) {
     getPhotos();
   }, [token]);
 
-  const handlePhotoPress = (photo) => {};
+  // const handlePhotoPress = (photo) => {};
 
-  console.log("PhotoCard:", PhotoCard);
-  const renderItem = ({ item }) => (
-    <PhotoCard
-      photo={item}
-      prompt={item.prompt}
-      onPress={() => handlePhotoPress(item)}
-    />
-  );
+  // const renderItem = ({ item }) => (
+  //   <PhotoCard
+  //     photo={item}
+  //     prompt={item.prompt}
+  //     onPress={() => handlePhotoPress(item)}
+  //   />
+  // );
 
   return (
     <View>
-      <FlatList
+      {todayEntry ? (
+        <FlatList
+          data={photos}
+          renderItem={({ item }) => <PhotoCard photo={item} />}
+        />
+      ) : (
+        <View>
+          <PromptCard prompt={prompt} navigation={navigation} />
+          <FlatList
+            data={photos}
+            renderItem={({ item }) => <PhotoCard photo={item} />}
+          />
+        </View>
+      )}
+      {/* <FlatList
         data={photos}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <PhotoCard photo={item} />}
       />
-      <Text>PhotoList</Text>
+      <Text>PhotoList</Text> */}
     </View>
   );
 }

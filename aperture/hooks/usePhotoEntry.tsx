@@ -10,10 +10,12 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 export const usePhotoEntry = (
   navigation: NavigationProp<RootStackParamList>
 ) => {
+  //get token, prompt, and prompt id
+  //check if todayentry is submited
   const [token, setToken] = useState("");
   const [prompt, setPrompt] = useState("");
   const [promptId, setPromptId] = useState("");
-  const [todayEntry, setTodayEntry] = useState(null); // Today's entry if it exists
+  const [todayEntry, setTodayEntry] = useState(null);
   const [error, setError] = useState("");
 
   const checkTodayEntry = useCallback(
@@ -31,7 +33,6 @@ export const usePhotoEntry = (
           setTodayEntry(entryResponse.data);
           return true;
         }
-        setTodayEntry(null); // No entry for today
         return false;
       } catch (error) {
         if (error instanceof Error) {
@@ -64,12 +65,14 @@ export const usePhotoEntry = (
       }
     };
     initialize();
+    console.log("initialize called");
   }, [navigation]);
 
   useEffect(() => {
     if (promptId) {
       checkTodayEntry(promptId);
     }
+    console.log("check today entry called");
   }, [promptId, checkTodayEntry]);
 
   return { token, prompt, promptId, todayEntry, checkTodayEntry };
