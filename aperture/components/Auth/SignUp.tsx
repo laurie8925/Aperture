@@ -1,32 +1,53 @@
+/*TODO: 
+- add "NAME" input for calling backend
+- move supabase signUp call to backend
+- call backend /user/signup with email, name, and password */
+
 import React, { useState } from "react";
 import { Alert, StyleSheet, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { supabase, storeToken } from "../../utils/supabase";
 import { Button, Input } from "@rneui/themed";
 import { AuthStackParamList } from "../../types/NavigationType";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
 
+  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
+
   async function signUpWithEmail() {
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
+      const response = await axios.post(`${backendUrl}/auth/signup`, {
+        email,
+        password,
+        name,
       });
 
-      if (error) throw error;
+      const { data } = response;
+
       if (!data.session) {
         Alert.alert("Please check your inbox for email verification!");
+      } else {
+        Alert.alert("Success", "Signup successful!");
       }
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
+    } catch (error) {
+      if (error.response) {
+        Alert.alert(
+          "Error",
+          error.response.data.error || error.response.data.message
+        );
+      } else if (error.request) {
+        Alert.alert("Error", "No response from server");
+      } else {
+        Alert.alert("Error", error.message);
+      }
     } finally {
       setLoading(false);
       navigation.navigate("LogIn");
@@ -35,6 +56,23 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Input
+          style={[styles.placeholder, styles.text]}
+          label={
+            <View style={styles.labelContainer}>
+              <Icon name="envelope" color="#360C0C" size={23} />
+              <Text style={styles.text}>Name</Text>
+            </View>
+          }
+          onChangeText={(text) => setName(text)}
+          value={name}
+          placeholder="Bob"
+          placeholderTextColor="#c2b6b6"
+          autoCapitalize="words"
+          // containerStyle={styles.inputContainer}
+        />
+      </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           style={[styles.placeholder, styles.text]}

@@ -3,9 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-// import { NavigationProp } from "@react-navigation/native";
-// import { RootStackParamList } from "../types/NavigationType";
-
 import StartingScreen from "../components/Auth/StartingScreen";
 import SignUp from "../components/Auth/SignUp";
 import HomeScreen from "../components/HomeTab/HomeScreen";
@@ -14,7 +11,6 @@ import Login from "../components/Auth/Login";
 import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
 import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
 import UploadEntry from "../components/HomeTab/UploadEntry";
-
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -33,7 +29,10 @@ interface AuthProps {
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
-function TabNavigator({ setIsAuthenticated }: AuthProps) {
+function TabNavigator({
+  setIsAuthenticated,
+  name,
+}: AuthProps & { name: string }) {
   const Tab = createBottomTabNavigator<TabParamList>();
   return (
     <Tab.Navigator
@@ -50,7 +49,7 @@ function TabNavigator({ setIsAuthenticated }: AuthProps) {
     >
       <Tab.Screen
         name="Home"
-        component={HomeNavigator}
+        children={() => <HomeNavigator name={name} />}
         options={{ headerShown: false }}
       />
       <Tab.Screen
@@ -63,11 +62,14 @@ function TabNavigator({ setIsAuthenticated }: AuthProps) {
   );
 }
 
-function HomeNavigator() {
+function HomeNavigator({ name }: { name: string }) {
   const Stack = createNativeStackNavigator<RootStackParamList>();
   return (
     <Stack.Navigator>
-      <Stack.Screen name="HomeMain" component={HomeScreen} />
+      <Stack.Screen
+        name="Home"
+        children={(props) => <HomeScreen {...props} name={name} />}
+      />
       <Stack.Screen name="Entry" component={PhotoEntryScreen} />
       <Stack.Screen name="ShowEntry" component={ShowEntryScreen} />
       <Stack.Screen name="UploadEntry" component={UploadEntry} />
@@ -105,6 +107,7 @@ function AuthStack({ setIsAuthenticated }: AuthProps) {
 
 export default function AppNavigator() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [name, setname] = useState<string>(""); // Add state for user name
 
   const checkAuth = async () => {
     try {
@@ -113,20 +116,26 @@ export default function AppNavigator() {
         const response = await axios.get(`${backendUrl}/user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        console.log("app navigator:", response.data.user);
         if (response.data.user) {
           setIsAuthenticated(true);
+          setname(response.data.user.name);
         } else {
           setIsAuthenticated(false);
+          setname("");
         }
       } else {
         setIsAuthenticated(false);
+        setname("");
       }
     } catch (err: unknown) {
       console.error(
         "Auth check failed:",
-        err?.response?.data?.message || err.message
+        err.response?.data?.message || err.message
       );
       setIsAuthenticated(false);
+      setname("");
     }
   };
 
@@ -137,7 +146,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       {isAuthenticated ? (
-        <TabNavigator setIsAuthenticated={setIsAuthenticated} />
+        <TabNavigator setIsAuthenticated={setIsAuthenticated} name={name} />
       ) : (
         <AuthStack setIsAuthenticated={setIsAuthenticated} />
       )}

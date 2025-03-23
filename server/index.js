@@ -1,10 +1,16 @@
+/*TODO:
+- add /user route
+- update user route to get data from public profile database 
+- add route to index
+- add /user/sign up call to supabase.auth.signupp and add to */
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
 
 import promptRoute from "./routes/prompts.js";
-import loginRoute from "./routes/login.js";
+import AuthRoute from "./routes/auth.js";
 import photoRoute from "./routes/photo.js";
+import userRoute from "./routes/user.js";
 import authenticateToken from "./middleware/authMiddleware.js";
 
 const app = express();
@@ -19,13 +25,11 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-app.use("/prompts", promptRoute);
-app.get("/user", authenticateToken, (req, res) => {
-  res.json({ user: req.user });
-});
-
-app.use("/login", loginRoute);
-app.use("/photo", photoRoute);
+//routes
+app.use("/prompts", promptRoute); //get  prompt
+app.use("/auth", AuthRoute); //auth login
+app.use("/photo", photoRoute); //photos
+app.use("/user", userRoute); //get user info from public table
 
 app.listen(PORT, backendUrl, () => {
   console.log(`Server running on http://${backendUrl}:${PORT}`);

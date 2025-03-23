@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
 import express from "express";
-import { createClient } from "@supabase/supabase-js";
 import authenticateToken from "../middleware/authMiddleware.js";
 import supabase from "../config/supabase.js";
 import * as photoControllers from "../controllers/photo.js";

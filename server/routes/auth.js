@@ -43,4 +43,42 @@ router.route("/").post(async (req, res) => {
   }
 });
 
+router.route("/signup").post(async (req, res) => {
+  const { email, password, name } = req.body;
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name },
+      },
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    //currently turned off for now
+    if (!data.session) {
+      return res.status(200).json({
+        message: "Please check your inbox for email verification!",
+        user: data.user,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Signup successful",
+      user: data.user,
+      session: data.session,
+    });
+  } catch (error) {
+    console.error("Signup error:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
+
 export default router;

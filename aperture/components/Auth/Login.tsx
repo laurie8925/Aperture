@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosError } from "axios"; // Import AxiosError
+import axios from "axios";
 import { Button, Input } from "@rneui/themed";
 import { AuthStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
@@ -52,7 +52,7 @@ const Login = ({ setIsAuthenticated, navigation }: LoginProps) => {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        `${backendUrl}/login`,
+        `${backendUrl}/auth`,
         {
           email,
           password,
