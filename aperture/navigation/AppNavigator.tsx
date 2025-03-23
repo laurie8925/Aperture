@@ -98,8 +98,8 @@ function AuthStack({ auth }) {
 
 export default function AppNavigator() {
   const auth = useAuth();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [name, setname] = useState<string>(""); // Add state for user name
+  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  // const [name, setname] = useState<string>(""); // Add state for user name
 
   // const checkAuth = async () => {
   //   try {
