@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { supabase } from "./utils/supabase";
-import Auth from "./components/Auth";
+import Auth from "../client/app-example/scripts/Auth";
 import { Session } from "@supabase/supabase-js";
 import AppNavigator from "./navigation/AppNavigator";
 

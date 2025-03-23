@@ -3,38 +3,28 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { emitSignOut } from "../utils/authEvent";
 import axios from "axios";
+import { AuthState } from "../hooks/useAuth";
 
-interface AccountProps {
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+interface AccountScreenProps {
+  auth: AuthState;
 }
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
-export default function AccountScreen({ setIsAuthenticated }: AccountProps) {
-  const handleSignOut = async () => {
+export default function AccountScreen({ auth }: AccountScreenProps) {
+  async function handleSignOut() {
     try {
-      const token = await AsyncStorage.getItem("token");
-
-      if (token) {
-        await axios.get(`${backendUrl}/user/logout`, {
-          // Updated to /logout
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-
-      await AsyncStorage.removeItem("token");
-
-      emitSignOut();
-      setIsAuthenticated(false);
-    } catch (err) {
-      console.error("Error during sign-out:", err);
+      await auth.logout();
+    } catch (error) {
+      console.error("Logout error:", auth.error);
     }
-  };
-
+  }
   return (
     <View style={styles.container}>
-      <Text>Profile Screen</Text>
+      <Text>Profile Details</Text>
+      <Text>Name</Text>
+      <Text>{auth.user?.name}</Text>
+      <Text>Email</Text>
+      <Text>{auth.user?.email}</Text>
       <Button title="Sign Out" onPress={handleSignOut} />
     </View>
   );

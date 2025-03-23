@@ -10,8 +10,14 @@ import { Button, Input } from "@rneui/themed";
 import { AuthStackParamList } from "../../types/NavigationType";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { AuthState } from "../../hooks/useAuth";
 
-export default function Auth() {
+interface SignupProps {
+  auth: AuthState;
+  navigation: NavigationProp<AuthStackParamList>;
+}
+
+export default function Auth({ auth }: SignupProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

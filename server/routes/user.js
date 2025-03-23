@@ -32,7 +32,7 @@ router.get("/", authenticateToken, async (req, res) => {
       user: {
         userId: req.user.userId,
         email: profile.email,
-        name: profile.username,
+        name: profile.name,
       },
     });
   } catch (error) {
