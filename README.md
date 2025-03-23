@@ -18,7 +18,6 @@ Anyone who would like to start relfecting on their days.
 - Randomized daily prompt for users to reflect on their day
 - Daily prompt are answered with one photo! (with the option to add note)
 - Display most recent entries on Home Page
-- User can update their account details, reset password, and delete accounts
 
 ## Implementation
 

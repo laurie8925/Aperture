@@ -3,19 +3,12 @@ import React from "react";
 import { TouchableOpacity, Image } from "react-native";
 import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
+import { Photo } from "../../types/types";
 
 // define props
 interface PhotoCardProps {
-  photo: {
-    id?: string;
-    image_url: string;
-    prompt_id: string;
-    note?: string;
-    date: string;
-    prompt: string;
-  };
+  photo: Photo;
   navigation: NavigationProp<RootStackParamList>;
-  // onPress: () => void;
 }
 
 const PhotoCard = ({ photo, navigation }: PhotoCardProps) => (

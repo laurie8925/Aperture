@@ -15,12 +15,16 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ auth, navigation }: HomeScreenProps) {
-  const name = auth.user?.name || "Guest"; //
+  const name = auth.user?.name || "Guest";
   return (
     <View style={styles.container}>
-      <Text>Home Screen</Text>
-      <Text>Welcome, {name}!</Text>
-      <PhotoList navigation={navigation} />
+      <View style={styles.header}>
+        <Text style={styles.title}>Hello, {name}!</Text>
+        {/* <Text style={styles.subtitle}>Welcome, {name}!</Text> */}
+      </View>
+      <View style={styles.photolistContainer}>
+        <PhotoList navigation={navigation} />
+      </View>
     </View>
   );
 }
@@ -28,7 +32,24 @@ export default function HomeScreen({ auth, navigation }: HomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    paddingTop: 100,
+  },
+  header: {
+    marginBottom: 40,
+    marginLeft: 40,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+  },
+  photolistContainer: {
+    backgroundColor: "#888E62",
+    paddingTop: 50,
+    paddingBottom: 150,
+    borderRadius: 50,
   },
 });

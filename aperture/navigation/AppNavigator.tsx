@@ -12,9 +12,11 @@ import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
 import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
 import UploadEntry from "../components/HomeTab/UploadEntry";
 import Icon from "react-native-vector-icons/FontAwesome";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useAuth, AuthState } from "../hooks/useAuth";
-import axios from "axios";
+
+import { Dimensions } from "react-native";
+import { View } from "react-native";
 import {
   TabParamList,
   RootStackParamList,
@@ -35,14 +37,27 @@ function TabNavigator({ auth }: AuthProps) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        ...screenOptions,
         tabBarIcon: ({ color, size }) => {
           let iconName;
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Account") iconName = "user";
-          return <Icon name={iconName} size={size} color={color} />;
+
+          return (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Icon name={iconName} size={size} color={color} />
+            </View>
+          );
         },
-        tabBarActiveTintColor: "#360C0C",
-        tabBarInactiveTintColor: "gray",
+        tabBarActiveTintColor: "#F7EAD8",
+        tabBarInactiveTintColor: "#888E62",
       })}
     >
       <Tab.Screen
@@ -65,10 +80,23 @@ function HomeNavigator({ auth }: AuthProps) {
       <Stack.Screen
         name="Home"
         children={(props) => <HomeScreen {...props} auth={auth} />}
+        options={{ headerShown: false }}
       />
-      <Stack.Screen name="Entry" component={PhotoEntryScreen} />
-      <Stack.Screen name="ShowEntry" component={ShowEntryScreen} />
-      <Stack.Screen name="UploadEntry" component={UploadEntry} />
+      <Stack.Screen
+        name="Entry"
+        component={PhotoEntryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ShowEntry"
+        component={ShowEntryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="UploadEntry"
+        component={UploadEntry}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -116,3 +144,38 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
+
+const { width } = Dimensions.get("window");
+const TAB_BAR_WIDTH = width - 32; // 16px margin on each side
+
+const screenOptions = {
+  tabBarStyle: {
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    backgroundColor: "#360C0C",
+    borderRadius: 999,
+    height: 70,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 20,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  tabBarItemStyle: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    padding: 10,
+  },
+  tabBarIconStyle: {
+    alignSelf: "center",
+    color: "#F7EAD8",
+  },
+};
