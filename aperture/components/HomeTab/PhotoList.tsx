@@ -47,7 +47,7 @@ export default function PhotoList({ navigation }: Props) {
     <ScrollView
       showsVerticalScrollIndicator={false}
       overScrollMode="never"
-      contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 30 }}
+      contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20 }}
     >
       {todayEntry ? (
         photos.map((item) => (

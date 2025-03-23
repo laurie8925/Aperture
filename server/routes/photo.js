@@ -14,29 +14,12 @@ router.post("/add-photo", authenticateToken, async (req, res) => {
     const { prompt_id, image_url, note, prompt } = req.body;
     const user_id = req.user?.userId;
 
-    console.log("API /add-photo - user_id:", user_id);
-    console.log("API /add-photo - prompt_id:", prompt_id);
-    console.log("API /add-photo - image_url:", image_url);
-    console.log("API /add-photo - note:", note);
-
     if (!prompt_id || !image_url || !user_id) {
       return res.status(400).json({
         error:
           "Missing required fields: prompt_id, image_url, and user_id are required",
       });
     }
-
-    // const { data: promptData, error: promptError } = await supabase
-    //   .from("prompts")
-    //   .select("id")
-    //   .eq("id", prompt_id)
-    //   .single();
-
-    // if (promptError || !promptData) {
-    //   return res
-    //     .status(400)
-    //     .json({ error: "Invalid prompt_id. Prompt does not exist" });
-    // }
 
     const { data, error } = await supabase
       .from("photos")

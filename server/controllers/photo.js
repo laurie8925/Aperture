@@ -11,7 +11,8 @@ const getAllPhotos = async (req, res) => {
     const { data, error } = await supabase
       .from("photos")
       .select()
-      .eq("user_id", user_id);
+      .eq("user_id", user_id)
+      .order("date", { ascending: false });
 
     res.status(200).json(data);
   } catch (error) {

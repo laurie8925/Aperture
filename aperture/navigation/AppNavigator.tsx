@@ -68,6 +68,7 @@ function TabNavigator({ auth }: AuthProps) {
       <Tab.Screen
         name="Account"
         children={(props) => <AccountScreen {...props} auth={auth} />}
+        options={{ headerShown: false }}
       />
     </Tab.Navigator>
   );
@@ -146,7 +147,6 @@ export default function AppNavigator() {
 }
 
 const { width } = Dimensions.get("window");
-const TAB_BAR_WIDTH = width - 32; // 16px margin on each side
 
 const screenOptions = {
   tabBarStyle: {

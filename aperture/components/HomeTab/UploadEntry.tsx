@@ -6,6 +6,8 @@ import axios from "axios";
 import { supabase } from "../../utils/supabase";
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../types/NavigationType";
+import { TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons"; // Add this import
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
@@ -17,7 +19,7 @@ interface Props {
 }
 
 export default function UploadEntry({ route, navigation }: Props) {
-  const { token, promptId, prompt, size } = route.params; // Extract params from route
+  const { token, promptId, prompt, size } = route.params;
 
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -114,7 +116,16 @@ export default function UploadEntry({ route, navigation }: Props) {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
+      {/* Back Button with Icon */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <Icon name="arrow-back" size={40} color="#360C0C" />
+      </TouchableOpacity>
+
+      {/* Existing Content */}
       {photoUrl ? (
         <Image
           source={{ uri: photoUrl }}
@@ -149,6 +160,15 @@ export default function UploadEntry({ route, navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 100,
+    backgroundColor: "#F7EAD8",
+  },
+  backButton: {
+    marginBottom: 20,
+  },
   avatar: {
     borderRadius: 5,
     overflow: "hidden",

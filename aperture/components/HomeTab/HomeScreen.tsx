@@ -33,14 +33,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 100,
+    backgroundColor: "#F7EAD8",
   },
   header: {
     marginBottom: 40,
     marginLeft: 40,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 26,
+    fontFamily: "PlayfairDisplayBold",
+    color: "#360C0C",
   },
   subtitle: {
     fontSize: 16,
