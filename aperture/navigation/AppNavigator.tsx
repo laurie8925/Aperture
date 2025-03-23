@@ -116,6 +116,8 @@ export default function AppNavigator() {
         const response = await axios.get(`${backendUrl}/user`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        console.log("app navigator:", response.data.user);
         if (response.data.user) {
           setIsAuthenticated(true);
           setname(response.data.user.name);
