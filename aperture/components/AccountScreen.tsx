@@ -12,9 +12,18 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 export default function AccountScreen({ setIsAuthenticated }: AccountProps) {
   const handleSignOut = async () => {
     try {
-      await AsyncStorage.removeItem("token"); // Clear the token
+      const token = await AsyncStorage.getItem("token");
 
-      await axios.get(`${backendUrl}/user/logout`); //update profile table
+      if (token) {
+        await axios.get(`${backendUrl}/user/logout`, {
+          // Updated to /logout
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      await AsyncStorage.removeItem("token");
 
       emitSignOut();
       setIsAuthenticated(false);

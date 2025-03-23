@@ -50,7 +50,9 @@ router.route("/signup").post(async (req, res) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      name,
+      options: {
+        data: { name },
+      },
     });
 
     if (error) {

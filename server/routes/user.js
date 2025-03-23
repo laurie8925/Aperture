@@ -43,26 +43,20 @@ router.get("/", authenticateToken, async (req, res) => {
 
 router.get("/logout", authenticateToken, async (req, res) => {
   try {
-    const { data: profile, error } = await supabase
+    // Update the is_active status directly (no need to fetch first)
+    const { error: updateError } = await supabase
       .from("profiles")
-      .eq("id", req.user.userId)
-      .single()
-      .update({ is_active: false });
+      .update({ is_active: false })
+      .eq("id", req.user.userId);
 
-    if (error) {
-      console.error("Profile fetch error:", error);
-      return res.status(404).json({ message: "Profile not found" });
+    if (updateError) {
+      console.error("Profile update error:", updateError);
+      return res.status(500).json({ message: "Error updating profile" });
     }
 
-    res.json({
-      user: {
-        userId: req.user.userId,
-        email: profile.email,
-        name: profile.username,
-      },
-    });
+    res.json({ message: "Logged out successfully" });
   } catch (error) {
-    console.error("User fetch error:", error);
+    console.error("Logout error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
