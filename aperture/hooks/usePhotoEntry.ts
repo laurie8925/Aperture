@@ -65,14 +65,12 @@ export const usePhotoEntry = (
       }
     };
     initialize();
-    console.log("initialize called");
   }, [navigation]);
 
   useEffect(() => {
     if (promptId) {
       checkTodayEntry(promptId);
     }
-    console.log("check today entry called");
   }, [promptId, checkTodayEntry]);
 
   return { token, prompt, promptId, todayEntry, checkTodayEntry };

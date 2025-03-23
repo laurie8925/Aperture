@@ -127,13 +127,7 @@ function AuthStack({ auth }: AuthProps) {
 
 export default function AppNavigator() {
   const auth = useAuth();
-  useEffect(() => {
-    console.log("Auth state:", {
-      isAuthenticated: auth.isAuthenticated,
-      user: auth.user,
-      token: auth.token,
-    });
-  }, [auth.isAuthenticated, auth.user, auth.token]);
+  useEffect(() => {}, [auth.isAuthenticated, auth.user, auth.token]);
 
   return (
     <NavigationContainer>

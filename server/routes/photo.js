@@ -60,8 +60,8 @@ router.get("/today", authenticateToken, async (req, res) => {
     }
 
     const user_id = req.user?.userId;
-    console.log(`API /today - user_id:`, user_id);
-    console.log(`API /today - prompt_id:`, prompt_id);
+    // console.log(`API /today - user_id:`, user_id);
+    // console.log(`API /today - prompt_id:`, prompt_id);
 
     const { data, error } = await supabase
       .from("photos")
@@ -72,8 +72,8 @@ router.get("/today", authenticateToken, async (req, res) => {
       .limit(1)
       .single();
 
-    console.log(`API /today - Error:`, error);
-    console.log(`API /today- Response sent:`, data || false);
+    // console.log(`API /today - Error:`, error);
+    // console.log(`API /today- Response sent:`, data || false);
 
     if (error) {
       console.error(`API /today - Query error:`, error);

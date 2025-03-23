@@ -68,7 +68,7 @@ export default function UploadEntry({ route, navigation }: Props) {
       const imageUrl = publicUrlData.publicUrl;
       setPhotoUrl(imageUrl);
 
-      console.log("Image URL:", imageUrl);
+      // console.log("Image URL:", imageUrl);
     } catch (error) {
       console.error("Upload error:", error);
       Alert.alert("Upload failed", String(error));
@@ -97,7 +97,7 @@ export default function UploadEntry({ route, navigation }: Props) {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log("uploadDatabase - Photo added:", response.data);
+      // console.log("uploadDatabase - Photo added:", response.data);
 
       navigation.navigate("ShowEntry", {
         photoUrl: photoUrl,

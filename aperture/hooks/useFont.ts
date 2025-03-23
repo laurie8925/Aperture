@@ -19,10 +19,5 @@ export const useCustomFonts = () => {
     RedHatDisplayBold: RedHatDisplay_700Bold,
   });
 
-  if (fontsLoaded) {
-    console.log(
-      "Fonts loaded: PlayfairDisplay, RedHatDisplay, RedHatDisplayBold"
-    );
-  }
   return fontsLoaded;
 };
