@@ -6,7 +6,7 @@ import {
   NavigationProp,
   RouteProp,
 } from "@react-navigation/native";
-import { RootStackParamList } from "../types/NavigationType";
+import { RootStackParamList } from "../../types/NavigationType";
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;
@@ -32,7 +32,7 @@ export default function ShowEntryScreen({ route }: Props) {
         </View>
       ) : null}
 
-      <Button title="Home" onPress={() => navigation.navigate("HomeMain")} />
+      <Button title="Home" onPress={() => navigation.navigate("Home")} />
     </View>
   );
 }
