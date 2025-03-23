@@ -20,9 +20,6 @@ export default function HomeScreen({ auth, navigation }: HomeScreenProps) {
     <View style={styles.container}>
       <Text>Home Screen</Text>
       <Text>Welcome, {name}!</Text>
-      {/* <Text onPress={() => navigation.navigate("Entry")}>
-        Go to Photo Entry
-      </Text> */}
       <PhotoList navigation={navigation} />
     </View>
   );
