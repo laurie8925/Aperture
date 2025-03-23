@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { emitSignOut } from "../utils/authEvent";
 import axios from "axios";
+import { AuthState } from "../hooks/useAuth";
 
-interface AccountProps {
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+interface AccountScreenProps {
+  auth: AuthState;
 }
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
-export default function AccountScreen({ setIsAuthenticated }: AccountProps) {
+export default function AccountScreen({ auth }: AccountScreenProps) {
   const handleSignOut = async () => {
     try {
       const token = await AsyncStorage.getItem("token");

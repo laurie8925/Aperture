@@ -8,7 +8,7 @@ import cors from "cors";
 import "dotenv/config";
 
 import promptRoute from "./routes/prompts.js";
-import AuthRoute from "./routes/auth.js";
+import authRoute from "./routes/auth.js";
 import photoRoute from "./routes/photo.js";
 import userRoute from "./routes/user.js";
 import authenticateToken from "./middleware/authMiddleware.js";
@@ -27,7 +27,7 @@ app.use(express.json());
 
 //routes
 app.use("/prompts", promptRoute); //get  prompt
-app.use("/auth", AuthRoute); //auth login
+app.use("/auth", authRoute); //auth login
 app.use("/photo", photoRoute); //photos
 app.use("/user", userRoute); //get user info from public table
 

@@ -13,6 +13,7 @@ import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
 import UploadEntry from "../components/HomeTab/UploadEntry";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import {
   TabParamList,
@@ -29,10 +30,7 @@ interface AuthProps {
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
-function TabNavigator({
-  setIsAuthenticated,
-  name,
-}: AuthProps & { name: string }) {
+function TabNavigator({ auth }) {
   const Tab = createBottomTabNavigator<TabParamList>();
   return (
     <Tab.Navigator
@@ -49,26 +47,24 @@ function TabNavigator({
     >
       <Tab.Screen
         name="Home"
-        children={() => <HomeNavigator name={name} />}
+        children={() => <HomeNavigator auth={auth} />}
         options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Account"
-        children={(props) => (
-          <AccountScreen setIsAuthenticated={setIsAuthenticated} />
-        )}
+        children={(props) => <AccountScreen {...props} auth={auth} />}
       />
     </Tab.Navigator>
   );
 }
 
-function HomeNavigator({ name }: { name: string }) {
+function HomeNavigator({ auth }) {
   const Stack = createNativeStackNavigator<RootStackParamList>();
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home"
-        children={(props) => <HomeScreen {...props} name={name} />}
+        children={(props) => <HomeScreen {...props} auth={auth} />}
       />
       <Stack.Screen name="Entry" component={PhotoEntryScreen} />
       <Stack.Screen name="ShowEntry" component={ShowEntryScreen} />
@@ -77,7 +73,7 @@ function HomeNavigator({ name }: { name: string }) {
   );
 }
 
-function AuthStack({ setIsAuthenticated }: AuthProps) {
+function AuthStack({ auth }) {
   const Stack = createNativeStackNavigator<AuthStackParamList>();
   return (
     <Stack.Navigator initialRouteName="StartingScreen">
@@ -88,17 +84,12 @@ function AuthStack({ setIsAuthenticated }: AuthProps) {
       />
       <Stack.Screen
         name="LogIn"
-        children={({ navigation }) => (
-          <Login
-            setIsAuthenticated={setIsAuthenticated}
-            navigation={navigation}
-          />
-        )}
+        children={(props) => <Login {...props} auth={auth} />}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SignUp"
-        component={SignUp}
+        children={(props) => <SignUp {...props} auth={auth} />}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -106,50 +97,63 @@ function AuthStack({ setIsAuthenticated }: AuthProps) {
 }
 
 export default function AppNavigator() {
+  const auth = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [name, setname] = useState<string>(""); // Add state for user name
 
-  const checkAuth = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      if (token) {
-        const response = await axios.get(`${backendUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  // const checkAuth = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("token");
+  //     if (token) {
+  //       const response = await axios.get(`${backendUrl}/user`, {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
 
-        console.log("app navigator:", response.data.user);
-        if (response.data.user) {
-          setIsAuthenticated(true);
-          setname(response.data.user.name);
-        } else {
-          setIsAuthenticated(false);
-          setname("");
-        }
-      } else {
-        setIsAuthenticated(false);
-        setname("");
-      }
-    } catch (err: unknown) {
-      console.error(
-        "Auth check failed:",
-        err.response?.data?.message || err.message
-      );
-      setIsAuthenticated(false);
-      setname("");
-    }
-  };
+  //       console.log("app navigator:", response.data.user);
+  //       if (response.data.user) {
+  //         setIsAuthenticated(true);
+  //         setname(response.data.user.name);
+  //       } else {
+  //         setIsAuthenticated(false);
+  //         setname("");
+  //       }
+  //     } else {
+  //       setIsAuthenticated(false);
+  //       setname("");
+  //     }
+  //   } catch (err: unknown) {
+  //     console.error(
+  //       "Auth check failed:",
+  //       err.response?.data?.message || err.message
+  //     );
+  //     setIsAuthenticated(false);
+  //     setname("");
+  //   }
+  // };
 
+  // useEffect(() => {
+  //   checkAuth();
+  // }, []);
   useEffect(() => {
-    checkAuth();
-  }, []);
+    console.log("Auth state:", {
+      isAuthenticated: auth.isAuthenticated,
+      user: auth.user,
+      token: auth.token,
+    });
+  }, [auth.isAuthenticated, auth.user, auth.token]);
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? (
+      {auth.isAuthenticated ? (
+        <TabNavigator auth={auth} />
+      ) : (
+        <AuthStack auth={auth} />
+      )}
+      {/* {isAuthenticated ? (
         <TabNavigator setIsAuthenticated={setIsAuthenticated} name={name} />
       ) : (
         <AuthStack setIsAuthenticated={setIsAuthenticated} />
-      )}
+      )} */}
     </NavigationContainer>
   );
 }
