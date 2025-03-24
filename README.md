@@ -25,8 +25,8 @@ Anyone who would like to start relfecting on their days.
 
 Frontend
 
-- React
-- Javascript
+- React Native
+- Typescript
 
 Backend
 
@@ -35,45 +35,16 @@ Backend
 
 Database & File Storage
 
-- MySQL
+- PostgreSql
+- Supabase
 
 Authentication
 
 - JWT
 
-Hosting
-
-- Vercel (Frontend)
-- Render (Backend)
-- Heroku (Database)
-
 Testing
 
 - POSTMAN
-
-Optional
-
-Frontend:
-
-- React Native
-- Typescript
-
-Databse
-
-- PostgreSQL
-
-API
-
-- Gemini API (for prompts)
-
-Testing
-
-- JEST
-
-Hosting:
-
-- Expo EAS (Frontend)
-- Supabase (Database)
 
 ### APIs
 
@@ -88,13 +59,9 @@ Create Account Screen: Create new account, add (post) new user to database (nav)
 Home Page: display the most recent entry and today's prompt (nav) -> new entry, individual card page
 Entry Page: upload photo for prompt of the day (nav) -> individual card page, back (to home page)
 Indiviudal card page: shows that specific day entry, with prompt, photo, and notes (nav) -> home page
+Edit Individual card page: edit that specific day entry, with prompt, photo, and notes (nav) -> home page
 
-Account page: showcase some account stats navigate to account detail page (nav) -> account detail page
-Account detail apge: shows the user's name, email, creation date, reset password and edit profiles (nav) -> edit profile page
-Edit profile page: can edit name, email, icon, and option to delete account nav -> delete module, account detail page
-
-Optional:
-Calendar page: display what days had photo entry, and can click into it to it's individual card page
+Account detail page: shows the user's name, email, and logout
 
 ### Mockups
 
@@ -104,17 +71,14 @@ Calendar page: display what days had photo entry, and can click into it to it's 
 
 User: id, email, password (hashed), createdAt
 Prompt: id, text, date
-Photo: id, userId, promptId, imageUrl, date, note
+Photo: id, userId, promptId, imageUrl, date, note, prompt
 
 ### Endpoints
 
-Create user
+Auth
 
-- POST /user
-
-Login
-
-- GET /login
+- GET /auth
+- POST /auth/signup
 
 Prompt
 
@@ -125,16 +89,13 @@ Photos
 
 - POST /photo/add-photo
 - GET /photo/today
-- GET /photos/:userId
-- GET /photo/:photoId
-- PUT /photo/:photoId
+- GET /photos/user/entries
+- POST /photo/edit
 
 Users
 
-- GET /users/me
-- PUT /users/me
-- PUT /users/me/password
-- DELETE /users/me
+- GET /user
+- get /users/logout
 
 ## Roadmap
 
@@ -189,15 +150,12 @@ Database & File storage
 - connect database to backend
 - connect photo files to database
 
-Deployment:
-
-- set up frontend
-- set up backend
-- set up database
-
 ---
 
 ## Future Implementations
 
-Connect with other users, and be able to see other's entry!
-Calendar showcase days with entry, user can click into it to see the specific day entry
+- Calendar page: display what days had photo entry, and can click into it to it's individual card page
+- Edit profile page: can edit name, email, icon, and option to delete account nav -> delete module, account detail page
+- Account page: showcase some account stats navigate to account - detail page (nav) -> account detail page
+- Connect with other users, and be able to see other's entry!
+- Calendar showcase days with entry, user can click into it to see the specific day entry
