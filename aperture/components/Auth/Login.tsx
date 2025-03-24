@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Alert, View, StyleSheet, Text } from "react-native";
+import { Alert, View, StyleSheet, Text, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -31,6 +31,13 @@ const Login = ({ auth, navigation }: LoginProps) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.centerContainer}>
+        <Image
+          style={styles.imagestyle}
+          source={require("../../assets/camera-favicon-light.png")}
+        />
+        <Text style={styles.textstyle}>Aperture</Text>
+      </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           style={[styles.placeholder, styles.text]}
@@ -68,6 +75,7 @@ const Login = ({ auth, navigation }: LoginProps) => {
           // containerStyle={styles.inputContainer}
         />
       </View>
+
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           title="Sign In"
@@ -76,7 +84,7 @@ const Login = ({ auth, navigation }: LoginProps) => {
           titleStyle={styles.buttonText}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
+      <View style={[styles.verticallySpaced, styles.mt10]}>
         <Button
           title="Sign Up"
           onPress={() => navigation.navigate("SignUp")}
@@ -89,48 +97,53 @@ const Login = ({ auth, navigation }: LoginProps) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", backgroundColor: "#888E62" },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "#888E62",
+    paddingHorizontal: 20,
+  },
   verticallySpaced: {
-    padding: 7,
     justifyContent: "center",
     alignItems: "center",
   },
   mt20: { marginTop: 20 },
+  mt10: { marginTop: 10 },
   placeholder: {
     backgroundColor: "#f6ebd9",
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 999,
-    shadowColor: "#000",
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
     alignItems: "center",
+    fontFamily: "RedHatDisplayMed",
   },
   text: {
     color: "#360C0C",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 17,
+    fontFamily: "PlayfairDisplayBold",
   },
 
   labelContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
+    marginBottom: 10,
     gap: 10,
   },
-
+  centerContainer: {
+    alignItems: "center",
+    marginVertical: 30,
+  },
+  textstyle: {
+    fontFamily: "PlayfairDisplayBold",
+    fontSize: 30,
+    textAlign: "center",
+    color: "#F7EAD8",
+  },
   button: {
     backgroundColor: "#360C0C",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
-    shadowColor: "#000",
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
     width: 200,
     alignItems: "center",
   },
@@ -138,8 +151,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#F7EAD8",
     fontSize: 16,
-    fontWeight: "bold",
     textAlign: "center",
+    fontFamily: "PlayfairDisplayBold",
+  },
+  imagestyle: {
+    width: 100,
+    height: 100,
   },
 });
 

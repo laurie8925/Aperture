@@ -14,13 +14,20 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 type UploadEntryRouteProp = RouteProp<RootStackParamList, "UploadEntry">;
 
 interface Props {
-  route: UploadEntryRouteProp;
+  token: string;
+  promptId: string;
+  prompt: string;
+  size: number;
   navigation: NavigationProp<RootStackParamList>;
 }
 
-export default function UploadEntry({ route, navigation }: Props) {
-  const { token, promptId, prompt, size } = route.params;
-
+export default function UploadEntry({
+  token,
+  promptId,
+  prompt,
+  size,
+  navigation,
+}: Props) {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -32,7 +39,7 @@ export default function UploadEntry({ route, navigation }: Props) {
     try {
       setUploading(true);
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
@@ -67,8 +74,6 @@ export default function UploadEntry({ route, navigation }: Props) {
 
       const imageUrl = publicUrlData.publicUrl;
       setPhotoUrl(imageUrl);
-
-      // console.log("Image URL:", imageUrl);
     } catch (error) {
       console.error("Upload error:", error);
       Alert.alert("Upload failed", String(error));
@@ -103,6 +108,7 @@ export default function UploadEntry({ route, navigation }: Props) {
         photoUrl: photoUrl,
         note: note || "",
         prompt: prompt,
+        id: response.data.data.id,
       });
     } catch (error) {
       console.error("uploadDatabase - Error:", error.response?.data || error);

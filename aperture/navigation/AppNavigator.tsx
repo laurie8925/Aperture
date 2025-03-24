@@ -8,6 +8,7 @@ import SignUp from "../components/Auth/SignUp";
 import HomeScreen from "../components/HomeTab/HomeScreen";
 import AccountScreen from "../components/AccountScreen";
 import Login from "../components/Auth/Login";
+import EditEntry from "../components/HomeTab/EditEntry";
 import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
 import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
 import UploadEntry from "../components/HomeTab/UploadEntry";
@@ -96,6 +97,11 @@ function HomeNavigator({ auth }: AuthProps) {
       <Stack.Screen
         name="UploadEntry"
         component={UploadEntry}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditEntry"
+        component={EditEntry}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

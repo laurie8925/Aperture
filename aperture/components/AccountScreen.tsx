@@ -8,7 +8,6 @@ import { AuthState } from "../hooks/useAuth";
 interface AccountScreenProps {
   auth: AuthState;
 }
-const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 export default function AccountScreen({ auth }: AccountScreenProps) {
   async function handleSignOut() {

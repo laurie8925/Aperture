@@ -26,6 +26,7 @@ const PhotoCard = ({ photo, navigation }: PhotoCardProps) => {
             photoUrl: photo.image_url,
             prompt: photo.prompt,
             note: photo.note || "",
+            id: photo.id,
           })
         }
         style={styles.cardcontainer}

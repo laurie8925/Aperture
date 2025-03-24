@@ -15,14 +15,13 @@ interface Props {
 
 export default function ShowEntryScreen({ route }: Props) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { photoUrl, note, prompt } = route.params; //props from navigation in photoentry screen
+  const { photoUrl, note, prompt, id } = route.params; //props from navigation in photoentry screen
   return (
     <View style={styles.container}>
       <Image
         source={{ uri: photoUrl }}
         style={[styles.avatar, styles.image, { width: 300, height: 300 }]}
       />
-      {/* change the tags here */}
       <Text style={styles.textTitle}>Prompt</Text>
       <Text>{prompt}</Text>
       {note !== "" ? (
@@ -32,6 +31,17 @@ export default function ShowEntryScreen({ route }: Props) {
         </View>
       ) : null}
 
+      <Button
+        title="Edit"
+        onPress={() =>
+          navigation.navigate("EditEntry", {
+            photoUrl,
+            note,
+            prompt,
+            id,
+          })
+        }
+      />
       <Button title="Home" onPress={() => navigation.navigate("Home")} />
     </View>
   );

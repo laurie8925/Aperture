@@ -25,7 +25,6 @@ export const useAuth = (): AuthState => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  //   const [loading, setLoading] = useState<boolean>(true);
   const [error, seterror] = useState<string | null>(null);
 
   useEffect(() => {
