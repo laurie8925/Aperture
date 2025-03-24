@@ -1,6 +1,7 @@
-import { View, Text, Image, StyleSheet, Alert } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import React, { useState, useEffect } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   useNavigation,
   NavigationProp,
@@ -123,6 +124,12 @@ export default function EditEntryScreen({ route }: Props) {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <Ionicons name="chevron-back" size={24} color="black" />
+      </TouchableOpacity>
       <Image
         source={{ uri: photoUrl }}
         style={[styles.avatar, styles.image, { width: 300, height: 300 }]}
@@ -162,7 +169,7 @@ export default function EditEntryScreen({ route }: Props) {
 
       <Button
         title="Cancel"
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate("Home")}
         type="outline"
         containerStyle={styles.buttonContainer}
         disabled={submitting || uploading}
@@ -198,5 +205,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginVertical: 10,
+  },
+  backButton: {
+    marginBottom: 20,
   },
 });
