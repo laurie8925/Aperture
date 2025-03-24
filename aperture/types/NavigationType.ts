@@ -12,10 +12,21 @@ export type RootStackParamList = {
     photoUrl: string;
     note: string;
     prompt: string;
+    id: string;
+    date: string;
   };
   UploadEntry: {
+    token: string;
     prompt: string;
     promptId: string;
+    size: number;
+  };
+  EditEntry: {
+    photoUrl: string;
+    note: string;
+    prompt: string;
+    id: string;
+    date: string;
   };
 };
 

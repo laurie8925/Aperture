@@ -1,39 +1,49 @@
-import { useState, useRef } from "react";
 import {
-  StyleSheet,
   View,
-  Alert,
-  Image,
-  TouchableOpacity,
   Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
   ScrollView,
 } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { Button, Input } from "@rneui/themed";
-import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
-import { supabase } from "../../utils/supabase";
-import { NavigationProp, RouteProp } from "@react-navigation/native";
+import React, { useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import {
+  useNavigation,
+  NavigationProp,
+  RouteProp,
+} from "@react-navigation/native";
 import { RootStackParamList } from "../../types/NavigationType";
-
-const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
-
-type UploadEntryRouteProp = RouteProp<RootStackParamList, "UploadEntry">;
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
+import { supabase } from "../../utils/supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;
-  route: UploadEntryRouteProp;
+  route: RouteProp<RootStackParamList, "EditEntry">;
 }
 
-export default function UploadEntry({ navigation, route }: Props) {
+const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
+
+export default function EditEntryScreen({ route }: Props) {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const {
+    photoUrl: initialPhotoUrl,
+    note: initialNote,
+    prompt,
+    id,
+  } = route.params;
+
+  const [note, setNote] = useState(initialNote || "");
+  const [token, setToken] = useState("");
+  const [photoUrl, setPhotoUrl] = useState(initialPhotoUrl);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [note, setNote] = useState("");
-  const scrollViewRef = useRef<ScrollView>(null); // Ref for ScrollView
+  const [error, setError] = useState<string | null>(null);
 
-  const { token, promptId, prompt, size = 300 } = route.params;
-  const photoSize = { height: size, width: size };
+  const photoSize = { width: 300, height: 300 }; // Matches UploadEntry default
 
   const todayDate = new Date().toLocaleDateString("en-US", {
     month: "long",
@@ -43,13 +53,10 @@ export default function UploadEntry({ navigation, route }: Props) {
   async function uploadImage() {
     try {
       setUploading(true);
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission Denied", "Please allow access to your photos.");
-        return;
+      const storedToken = await AsyncStorage.getItem("token");
+      if (storedToken) {
+        setToken(storedToken);
       }
-
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: false,
@@ -60,7 +67,6 @@ export default function UploadEntry({ navigation, route }: Props) {
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
-        console.log("Upload canceled by user");
         return;
       }
 
@@ -79,122 +85,93 @@ export default function UploadEntry({ navigation, route }: Props) {
 
       if (uploadError) throw uploadError;
 
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData, error: urlError } = await supabase.storage
         .from("user-photos")
         .getPublicUrl(data.path);
 
-      const imageUrl = publicUrlData.publicUrl;
-      setPhotoUrl(imageUrl);
-      console.log("Photo uploaded successfully:", imageUrl);
+      if (urlError) throw urlError;
+
+      const newPhotoUrl = publicUrlData.publicUrl;
+      setPhotoUrl(newPhotoUrl);
     } catch (error) {
       console.error("Upload error:", error);
-      Alert.alert("Upload Failed", String(error));
+      setError("Failed to upload image: " + String(error));
     } finally {
       setUploading(false);
     }
   }
 
-  async function uploadDatabase() {
-    if (!photoUrl) {
-      Alert.alert("Error", "Please upload an image first");
-      return;
-    }
-
+  async function saveChanges() {
     try {
       setSubmitting(true);
+      setError(null);
+
       const response = await axios.post(
-        `${backendUrl}/photo/add-photo`,
+        `${backendUrl}/photo/edit`,
         {
-          prompt_id: promptId,
+          id,
+          note: note || "",
           image_url: photoUrl,
-          note: note || "No note provided",
-          prompt: prompt,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      navigation.navigate("ShowEntry", {
-        photoUrl: photoUrl,
-        note: note || "",
-        prompt: prompt,
-        id: response.data.data.id,
-        date: todayDate,
-      });
-    } catch (error) {
-      console.error("Submit error:", error);
-      Alert.alert(
-        "Submit Failed",
-        error instanceof Error ? error.message : String(error)
+      if (response.status === 200) {
+        navigation.navigate("ShowEntry", {
+          photoUrl,
+          note,
+          prompt,
+          id,
+        });
+      }
+    } catch (err) {
+      console.error("Error updating photo entry:", err);
+      setError(
+        "Failed to save changes: " + (err.response?.data?.error || String(err))
       );
     } finally {
       setSubmitting(false);
     }
   }
 
-  // Function to scroll to the input when it gains focus
-  const handleFocus = () => {
-    scrollViewRef.current?.scrollTo({
-      y: 400, // Adjust this value based on your layout
-      animated: true,
-    });
-  };
-
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => navigation.goBack()}
         style={styles.backButton}
+        onPress={() => navigation.navigate("Home")}
       >
         <Ionicons name="chevron-back" size={40} color="#888E62" />
       </TouchableOpacity>
 
       <Text style={styles.title}>{todayDate}</Text>
 
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled" // Ensures taps work with keyboard open
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.promptContainer}>
           <Text style={styles.promptstyle}>{prompt}</Text>
         </View>
 
         <View style={styles.contentContainer}>
           <View style={styles.photoContainer}>
-            {photoUrl ? (
-              <TouchableOpacity
-                onPress={uploadImage}
-                disabled={uploading}
-                activeOpacity={0.7}
-              >
-                <Image
-                  source={{ uri: photoUrl }}
-                  accessibilityLabel="Tap to upload a new photo"
-                  style={[photoSize, styles.avatar]}
-                />
-                {uploading && (
-                  <Text style={styles.uploadingText}>Uploading ...</Text>
-                )}
-              </TouchableOpacity>
-            ) : (
-              <View>
-                <TouchableOpacity
-                  onPress={uploadImage}
-                  disabled={uploading}
-                  activeOpacity={0.7}
-                >
-                  <View style={[photoSize, styles.avatar, styles.noImage]}>
-                    <Image
-                      style={styles.imagestyle}
-                      source={require("../../assets/camera-favicon.png")}
-                    />
-                  </View>
-                </TouchableOpacity>
-              </View>
+            <Image
+              source={{ uri: photoUrl }}
+              style={[photoSize, styles.avatar]}
+              accessibilityLabel="Photo to edit"
+            />
+            {uploading && (
+              <Text style={styles.uploadingText}>Uploading ...</Text>
             )}
           </View>
+
+          <Button
+            title={uploading ? "Uploading ..." : "Change Photo"}
+            onPress={uploadImage}
+            disabled={uploading || submitting}
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonText}
+            containerStyle={styles.buttonContainer}
+          />
 
           <View style={styles.inputContainer}>
             <Input
@@ -205,17 +182,34 @@ export default function UploadEntry({ navigation, route }: Props) {
                 </View>
               }
               value={note}
-              onChangeText={(text) => setNote(text)}
-              placeholder="Add a note for this photo"
-              onFocus={handleFocus} // Scroll to input when focused
+              onChangeText={setNote}
+              placeholder="Enter your note here"
+              multiline
+              numberOfLines={4}
+              disabled={submitting}
             />
           </View>
 
+          {error && <Text style={styles.errorText}>{error}</Text>}
+
           <Button
-            title={submitting ? "Submitting ..." : "Submit"}
-            onPress={uploadDatabase}
+            title={submitting ? "Saving ..." : "Save"}
+            onPress={saveChanges}
+            loading={submitting}
+            disabled={submitting || uploading}
             buttonStyle={styles.button}
             titleStyle={styles.buttonText}
+            containerStyle={styles.buttonContainer}
+          />
+
+          <Button
+            title="Cancel"
+            onPress={() => navigation.navigate("Home")}
+            type="outline"
+            buttonStyle={styles.cancelButton}
+            titleStyle={styles.cancelButtonText}
+            containerStyle={styles.buttonContainer}
+            disabled={submitting || uploading}
           />
         </View>
       </ScrollView>
@@ -275,12 +269,6 @@ const styles = StyleSheet.create({
   avatar: {
     borderRadius: 30,
   },
-  noImage: {
-    backgroundColor: "#F7EAD8",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   uploadingText: {
     position: "absolute",
     top: "50%",
@@ -291,16 +279,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 5,
     borderRadius: 3,
-  },
-  uploadText: {
-    textAlign: "center",
-    marginTop: 10,
-    color: "#007AFF",
-    fontWeight: "bold",
-  },
-  imagestyle: {
-    width: 100,
-    height: 100,
   },
   inputContainer: {
     marginVertical: 10,
@@ -319,6 +297,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     fontFamily: "PlayfairDisplayBold",
+  },
+  cancelButton: {
+    alignSelf: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    width: 200,
+    alignItems: "center",
+    borderColor: "#360C0C",
+    borderWidth: 2,
+    backgroundColor: "transparent",
+  },
+  cancelButtonText: {
+    color: "#360C0C",
+    fontSize: 16,
+    textAlign: "center",
+    fontFamily: "PlayfairDisplayBold",
+  },
+  buttonContainer: {
+    marginVertical: 10,
   },
   placeholder: {
     backgroundColor: "#f6ebd9",
@@ -343,5 +341,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     gap: 10,
+  },
+  errorText: {
+    color: "red",
+    marginVertical: 10,
+    textAlign: "center",
+    fontFamily: "RedHatDisplayMed",
   },
 });

@@ -1,43 +1,62 @@
-import React, { useState, useEffect } from "react";
-import { Alert, View, StyleSheet, Text, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import React, { useState } from "react";
+import { Alert, StyleSheet, View, Text } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { supabase, storeToken } from "../utils/supabase";
 import { Button, Input } from "@rneui/themed";
-import { AuthStackParamList } from "../../types/NavigationType";
-import { NavigationProp } from "@react-navigation/native";
-import { AuthState } from "../../hooks/useAuth";
 
-interface LoginProps {
-  auth: AuthState;
-  navigation: NavigationProp<AuthStackParamList>;
-}
-
-const Login = ({ auth, navigation }: LoginProps) => {
-  // const [user, setUser] = useState({});
-  // const [error, setError] = useState("");
+export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
-
-  async function signIn() {
+  async function signInWithEmail() {
+    setLoading(true);
     try {
-      await auth.login(email, password);
-    } catch (error: unknown) {
-      Alert.alert("Error", auth.error || "Login failed");
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+
+      const userToken = data.session.access_token;
+      await storeToken(userToken);
+
+      // Optional: Update user profile
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ is_active: true })
+        .eq("id", data.user.id);
+
+      if (updateError) throw updateError;
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function signUpWithEmail() {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+      if (!data.session) {
+        Alert.alert("Please check your inbox for email verification!");
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.centerContainer}>
-        <Image
-          style={styles.imagestyle}
-          source={require("../../assets/camera-favicon-light.png")}
-        />
-        <Text style={styles.textstyle}>Aperture</Text>
-      </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
           style={[styles.placeholder, styles.text]}
@@ -53,7 +72,7 @@ const Login = ({ auth, navigation }: LoginProps) => {
           placeholderTextColor="#c2b6b6"
           autoCapitalize="none"
           keyboardType="email-address"
-          inputContainerStyle={{ borderBottomWidth: 0 }}
+          // containerStyle={styles.inputContainer}
         />
       </View>
       <View style={styles.verticallySpaced}>
@@ -71,79 +90,75 @@ const Login = ({ auth, navigation }: LoginProps) => {
           placeholder="Password"
           placeholderTextColor="#c2b6b6"
           autoCapitalize="none"
-          inputContainerStyle={{ borderBottomWidth: 0 }}
           // containerStyle={styles.inputContainer}
         />
       </View>
-
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           title="Sign In"
-          onPress={signIn}
+          loading={loading}
+          onPress={signInWithEmail}
           buttonStyle={styles.button}
           titleStyle={styles.buttonText}
         />
       </View>
-      <View style={[styles.verticallySpaced, styles.mt10]}>
+      <View style={styles.verticallySpaced}>
         <Button
           title="Sign Up"
-          onPress={() => navigation.navigate("SignUp")}
+          loading={loading}
+          onPress={signUpWithEmail}
           buttonStyle={styles.button}
           titleStyle={styles.buttonText}
         />
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#888E62",
-    paddingHorizontal: 20,
-  },
+  container: { marginTop: 40, padding: 12 },
   verticallySpaced: {
+    paddingTop: 4,
+    paddingBottom: 4,
     justifyContent: "center",
     alignItems: "center",
   },
   mt20: { marginTop: 20 },
-  mt10: { marginTop: 10 },
   placeholder: {
     backgroundColor: "#f6ebd9",
-    paddingVertical: 16,
+    paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
     alignItems: "center",
-    fontFamily: "RedHatDisplayMed",
   },
   text: {
     color: "#360C0C",
-    fontSize: 17,
-    fontFamily: "PlayfairDisplayBold",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 
   labelContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 5,
     gap: 10,
   },
-  centerContainer: {
-    alignItems: "center",
-    marginVertical: 30,
-  },
-  textstyle: {
-    fontFamily: "PlayfairDisplayBold",
-    fontSize: 30,
-    textAlign: "center",
-    color: "#F7EAD8",
-  },
+
   button: {
     backgroundColor: "#360C0C",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 999,
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
     width: 200,
     alignItems: "center",
   },
@@ -151,13 +166,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#F7EAD8",
     fontSize: 16,
+    fontWeight: "bold",
     textAlign: "center",
-    fontFamily: "PlayfairDisplayBold",
-  },
-  imagestyle: {
-    width: 100,
-    height: 100,
   },
 });
-
-export default Login;

@@ -8,12 +8,12 @@ function authenticateToken(req, res, next) {
     return res.status(401).json({ message: "No JWT provided" });
   }
   const token = req.header("Authorization")?.replace("Bearer ", "");
-  console.log("Bearer header backend", req.headers.authorization);
+  // console.log("Bearer header backend", req.headers.authorization);
   try {
-    console.log("before decode", token);
+    // console.log("before decode", token);
     const decoded = jwt.verify(token, SUPABASE_JWT_SECRET);
     req.user = decoded;
-    console.log("after decode", token);
+    // console.log("after decode", token);
     console.log("Decoded user:", req.user);
     next();
   } catch (err) {
