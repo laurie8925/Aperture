@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   photolistContainer: {
     backgroundColor: "#888E62",
     paddingTop: 50,
-    paddingBottom: 150,
+    paddingBottom: 260,
     borderRadius: 50,
   },
   textstyle: {
