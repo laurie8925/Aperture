@@ -70,10 +70,7 @@ export default function Auth({ auth }: SignupProps) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Ionicons name="chevron-back" size={24} color="#F7EAD8" />
       </TouchableOpacity>
       <View style={styles.centerContainer}>
