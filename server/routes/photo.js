@@ -136,7 +136,7 @@ router.post("/edit", authenticateToken, async (req, res) => {
     if (note !== undefined) updateData.note = note;
     if (image_url !== undefined) updateData.image_url = image_url;
 
-    // Update the photo entry
+    // update the photo entry
     const { data, error } = await supabase
       .from("photos")
       .update(updateData)

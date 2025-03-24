@@ -7,6 +7,7 @@ import {
   RouteProp,
 } from "@react-navigation/native";
 import { RootStackParamList } from "../../types/NavigationType";
+import { useEffect } from "react";
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;

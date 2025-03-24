@@ -3,6 +3,7 @@ import { usePhotoEntry } from "../../hooks/usePhotoEntry";
 import UploadEntry from "./UploadEntry";
 import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
+import { useEffect } from "react"; // Add useEffect
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;

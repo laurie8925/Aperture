@@ -1,6 +1,6 @@
 import { View, Text, Image, StyleSheet, Alert } from "react-native";
 import { Button, Input } from "@rneui/themed";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   useNavigation,
   NavigationProp,

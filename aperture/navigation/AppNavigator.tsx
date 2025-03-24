@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,19 +13,17 @@ import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
 import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
 import UploadEntry from "../components/HomeTab/UploadEntry";
 import Icon from "react-native-vector-icons/FontAwesome";
-
 import { useAuth, AuthState } from "../hooks/useAuth";
-
-import { Dimensions } from "react-native";
-import { View } from "react-native";
+import { Dimensions, View } from "react-native";
 import {
   TabParamList,
   RootStackParamList,
   AuthStackParamList,
 } from "../types/NavigationType";
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<TabParamList>();
+const AuthStackNav = createNativeStackNavigator<AuthStackParamList>();
 
 interface AuthProps {
   auth: AuthState;
@@ -34,32 +32,49 @@ interface AuthProps {
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 function TabNavigator({ auth }: AuthProps) {
-  const Tab = createBottomTabNavigator<TabParamList>();
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        ...screenOptions,
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === "Home") iconName = "home";
-          else if (route.name === "Account") iconName = "user";
+      screenOptions={({ route, navigation }) => {
+        const state = navigation.getState(); // Get navigation state
+        const currentRoute =
+          state.routes[state.index].state?.routes?.[
+            state.routes[state.index].state?.index ?? 0
+          ]?.name;
 
-          return (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <Icon name={iconName} size={size} color={color} />
-            </View>
-          );
-        },
-        tabBarActiveTintColor: "#F7EAD8",
-        tabBarInactiveTintColor: "#888E62",
-      })}
+        // Show tab bar only on "Home" and "Account" tabs, hide elsewhere
+        const isTabBarVisible =
+          (route.name === "Home" &&
+            (!currentRoute || currentRoute === "Home")) ||
+          (route.name === "Account" &&
+            (!currentRoute || currentRoute === "Account"));
+
+        return {
+          ...screenOptions,
+          tabBarStyle: isTabBarVisible
+            ? screenOptions.tabBarStyle
+            : { display: "none" },
+          tabBarIcon: ({ color, size }) => {
+            let iconName;
+            if (route.name === "Home") iconName = "home";
+            else if (route.name === "Account") iconName = "user";
+
+            return (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <Icon name={iconName} size={size} color={color} />
+              </View>
+            );
+          },
+          tabBarActiveTintColor: "#F7EAD8",
+          tabBarInactiveTintColor: "#888E62",
+        };
+      }}
     >
       <Tab.Screen
         name="Home"
