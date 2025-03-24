@@ -127,7 +127,7 @@ function HomeNavigator({ auth }: AuthProps) {
 function AuthStack({ auth }: AuthProps) {
   const Stack = createNativeStackNavigator<AuthStackParamList>();
   return (
-    <Stack.Navigator initialRouteName="StartingScreen">
+    <Stack.Navigator>
       <Stack.Screen
         name="StartingScreen"
         component={StartingScreen}
@@ -161,8 +161,6 @@ export default function AppNavigator() {
     </NavigationContainer>
   );
 }
-
-const { width } = Dimensions.get("window");
 
 const screenOptions = {
   tabBarStyle: {
