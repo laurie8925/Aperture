@@ -1,8 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { emitSignOut } from "../utils/authEvent";
-import axios from "axios";
+import { View, Text, StyleSheet } from "react-native";
+import { Button } from "@rneui/themed";
 import { AuthState } from "../hooks/useAuth";
 
 interface AccountScreenProps {
@@ -23,19 +21,24 @@ export default function AccountScreen({ auth }: AccountScreenProps) {
         <Text style={styles.textstyle}>Aperture</Text>
       </View>
       <View style={styles.header}>
-        <Text style={styles.title}>Account Details</Text>
+        <Text style={styles.title}>Profile</Text>
       </View>
 
       <View style={styles.accountContainer}>
         <View style={styles.mb50}>
           <Text style={styles.subtitle}>Name</Text>
-          <Text>{auth.user?.name}</Text>
+          <Text style={styles.accounttext}>{auth.user?.name}</Text>
         </View>
         <View style={styles.mb50}>
           <Text style={styles.subtitle}>Email</Text>
-          <Text>{auth.user?.email}</Text>
+          <Text style={styles.accounttext}>{auth.user?.email}</Text>
         </View>
-        <Button title="Sign Out" onPress={handleSignOut} />
+        <Button
+          title="Sign Out"
+          onPress={handleSignOut}
+          buttonStyle={styles.button}
+          titleStyle={styles.buttonText}
+        />
       </View>
     </View>
   );
@@ -58,20 +61,22 @@ const styles = StyleSheet.create({
     color: "#360C0C",
   },
   subtitle: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: 20,
+    fontFamily: "PlayfairDisplayBold",
+    color: "#fff",
   },
   accountContainer: {
     flex: 1,
+    marginHorizontal: 20,
     backgroundColor: "#888E62",
     paddingTop: 50,
-    paddingBottom: 150,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
+    paddingBottom: 50,
+    marginBottom: 100,
+    borderRadius: 50,
     paddingHorizontal: 30,
   },
   mb50: {
-    marginBottom: 50,
+    marginBottom: 30,
   },
   textstyle: {
     fontFamily: "PlayfairDisplayBold",
@@ -81,5 +86,42 @@ const styles = StyleSheet.create({
   },
   centerContainer: {
     alignItems: "center",
+  },
+  backButton: {
+    paddingLeft: 20,
+    alignSelf: "flex-start",
+  },
+  text: {
+    color: "#fff",
+    fontSize: 26,
+    fontFamily: "PlayfairDisplayBold",
+    width: "100%",
+  },
+  labeltext: {
+    fontSize: 18,
+    fontFamily: "PlayfairDisplayBold",
+    color: "#360C0C",
+    width: "100%",
+  },
+  button: {
+    alignSelf: "center",
+    backgroundColor: "#360C0C",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    width: 200,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#F7EAD8",
+    fontSize: 16,
+    textAlign: "center",
+    fontFamily: "PlayfairDisplayBold",
+  },
+  accounttext: {
+    paddingVertical: 10,
+    fontSize: 20,
+    color: "#360C0C",
+    fontFamily: "RedHatDisplayBold",
   },
 });

@@ -34,6 +34,7 @@ export default function EditEntryScreen({ route }: Props) {
     note: initialNote,
     prompt,
     id,
+    date,
   } = route.params;
 
   const [note, setNote] = useState(initialNote || "");
@@ -58,7 +59,7 @@ export default function EditEntryScreen({ route }: Props) {
         setToken(storedToken);
       }
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
@@ -85,11 +86,9 @@ export default function EditEntryScreen({ route }: Props) {
 
       if (uploadError) throw uploadError;
 
-      const { data: publicUrlData, error: urlError } = await supabase.storage
+      const { data: publicUrlData } = supabase.storage
         .from("user-photos")
         .getPublicUrl(data.path);
-
-      if (urlError) throw urlError;
 
       const newPhotoUrl = publicUrlData.publicUrl;
       setPhotoUrl(newPhotoUrl);
@@ -124,6 +123,7 @@ export default function EditEntryScreen({ route }: Props) {
           note,
           prompt,
           id,
+          date,
         });
       }
     } catch (err) {
@@ -145,7 +145,7 @@ export default function EditEntryScreen({ route }: Props) {
         <Ionicons name="chevron-back" size={40} color="#888E62" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>{todayDate}</Text>
+      <Text style={styles.title}>{date}</Text>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.promptContainer}>
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F7EAD8",
   },
   scrollContent: {
-    flexGrow: 1, // Allows content to grow and scroll
+    flexGrow: 1,
   },
   backButton: {
     paddingLeft: 20,
