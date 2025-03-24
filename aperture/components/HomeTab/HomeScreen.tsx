@@ -18,6 +18,9 @@ export default function HomeScreen({ auth, navigation }: HomeScreenProps) {
   const name = auth.user?.name || "Guest";
   return (
     <View style={styles.container}>
+      <View style={styles.centerContainer}>
+        <Text style={styles.textstyle}>Aperture</Text>
+      </View>
       <View style={styles.header}>
         <Text style={styles.title}>Hello, {name}!</Text>
         {/* <Text style={styles.subtitle}>Welcome, {name}!</Text> */}
@@ -32,14 +35,15 @@ export default function HomeScreen({ auth, navigation }: HomeScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 100,
+    paddingTop: 15,
     backgroundColor: "#F7EAD8",
   },
   header: {
-    marginBottom: 40,
+    // marginBottom: 40,
     marginLeft: 40,
   },
   title: {
+    paddingVertical: 50,
     fontSize: 26,
     fontFamily: "PlayfairDisplayBold",
     color: "#360C0C",
@@ -53,5 +57,14 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 150,
     borderRadius: 50,
+  },
+  textstyle: {
+    fontFamily: "PlayfairDisplayBold",
+    fontSize: 20,
+    textAlign: "center",
+    color: "#360C0C",
+  },
+  centerContainer: {
+    alignItems: "center",
   },
 });

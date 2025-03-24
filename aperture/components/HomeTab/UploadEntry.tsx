@@ -32,7 +32,7 @@ export default function UploadEntry({ navigation, route }: Props) {
     try {
       setUploading(true);
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
