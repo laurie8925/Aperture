@@ -1,37 +1,30 @@
 import { useState } from "react";
-import { StyleSheet, View, Alert, Image } from "react-native";
+import { StyleSheet, View, Alert, Image, TouchableOpacity } from "react-native";
 import { Button, Input } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { supabase } from "../../utils/supabase";
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../types/NavigationType";
-import { TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons"; // Add this import
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 type UploadEntryRouteProp = RouteProp<RootStackParamList, "UploadEntry">;
 
 interface Props {
-  token: string;
-  promptId: string;
-  prompt: string;
-  size: number;
   navigation: NavigationProp<RootStackParamList>;
+  route: UploadEntryRouteProp;
 }
 
-export default function UploadEntry({
-  token,
-  promptId,
-  prompt,
-  size,
-  navigation,
-}: Props) {
+export default function UploadEntry({ navigation, route }: Props) {
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [note, setNote] = useState("");
+
+  // Extract params from route
+  const { token, promptId, prompt, size = 300 } = route.params; // size to 300 if not provided
 
   const photoSize = { height: size, width: size };
 
@@ -39,7 +32,7 @@ export default function UploadEntry({
     try {
       setUploading(true);
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
@@ -66,11 +59,10 @@ export default function UploadEntry({
 
       if (uploadError) throw uploadError;
 
-      const { data: publicUrlData, error: urlError } = await supabase.storage
+      //get publicurl
+      const { data: publicUrlData } = supabase.storage
         .from("user-photos")
         .getPublicUrl(data.path);
-
-      if (urlError) throw urlError;
 
       const imageUrl = publicUrlData.publicUrl;
       setPhotoUrl(imageUrl);
@@ -111,11 +103,10 @@ export default function UploadEntry({
         id: response.data.data.id,
       });
     } catch (error) {
-      console.error("uploadDatabase - Error:", error.response?.data || error);
-      Alert.alert(
-        "Submit failed",
-        error.response?.data?.error || String(error)
-      );
+      if (error instanceof Error) {
+        console.error("uploadDatabase - Error:", error);
+        Alert.alert("Submit failed", error.message);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -123,7 +114,6 @@ export default function UploadEntry({
 
   return (
     <View style={styles.container}>
-      {/* Back Button with Icon */}
       <TouchableOpacity
         style={styles.backButton}
         onPress={() => navigation.navigate("Home")}
@@ -131,7 +121,6 @@ export default function UploadEntry({
         <Icon name="arrow-back" size={40} color="#360C0C" />
       </TouchableOpacity>
 
-      {/* Existing Content */}
       {photoUrl ? (
         <Image
           source={{ uri: photoUrl }}

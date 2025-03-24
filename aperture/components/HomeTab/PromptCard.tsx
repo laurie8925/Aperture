@@ -25,8 +25,7 @@ const PromptCard = ({
             token: token,
             promptId: promptId,
             prompt: prompt,
-            navigation: navigation,
-            size: 150,
+            size: 300,
           })
         }
         style={styles.cardcontainer}

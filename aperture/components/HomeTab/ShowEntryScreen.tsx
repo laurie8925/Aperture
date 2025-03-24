@@ -1,5 +1,6 @@
-import { View, Text, Image, StyleSheet } from "react-native";
-import { Button, Input } from "@rneui/themed";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Button } from "@rneui/themed";
 import React from "react";
 import {
   useNavigation,
@@ -19,6 +20,12 @@ export default function ShowEntryScreen({ route }: Props) {
   const { photoUrl, note, prompt, id } = route.params; //props from navigation in photoentry screen
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <Ionicons name="chevron-back" size={24} color="black" />
+      </TouchableOpacity>
       <Image
         source={{ uri: photoUrl }}
         style={[styles.avatar, styles.image, { width: 300, height: 300 }]}
@@ -74,5 +81,8 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontSize: 20,
+  },
+  backButton: {
+    marginBottom: 20,
   },
 });

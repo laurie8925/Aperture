@@ -16,12 +16,13 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 export default function PhotoList({ navigation }: Props) {
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false); // Track if data is loaded
   const { prompt, token, todayEntry, promptId } = usePhotoEntry(navigation);
 
   useEffect(() => {
     async function getPhotos() {
       try {
-        if (!token) return;
+        if (!token || isDataLoaded) return; // Skip if no token or data already loaded
         const response = await axios.get(`${backendUrl}/photo/user/entries`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -36,12 +37,13 @@ export default function PhotoList({ navigation }: Props) {
         }));
 
         setPhotos(allPhotos);
+        setIsDataLoaded(true);
       } catch (error) {
         console.error("Error getting user photos:", error);
       }
     }
     getPhotos();
-  }, [token]);
+  }, [token, isDataLoaded]); // add depencey if the data is loaded
 
   return (
     <ScrollView

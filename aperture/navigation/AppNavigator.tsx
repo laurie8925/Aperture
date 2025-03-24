@@ -3,13 +3,14 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import StartingScreen from "../components/Auth/StartingScreen";
 import SignUp from "../components/Auth/SignUp";
 import HomeScreen from "../components/HomeTab/HomeScreen";
 import AccountScreen from "../components/AccountScreen";
 import Login from "../components/Auth/Login";
 import EditEntry from "../components/HomeTab/EditEntry";
-import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
+// import PhotoEntryScreen from "../components/HomeTab/PhotoEntryScreen";
 import ShowEntryScreen from "../components/HomeTab/ShowEntryScreen";
 import UploadEntry from "../components/HomeTab/UploadEntry";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -99,11 +100,11 @@ function HomeNavigator({ auth }: AuthProps) {
         children={(props) => <HomeScreen {...props} auth={auth} />}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Entry"
         component={PhotoEntryScreen}
         options={{ headerShown: false }}
-      />
+      /> */}
       <Stack.Screen
         name="ShowEntry"
         component={ShowEntryScreen}
