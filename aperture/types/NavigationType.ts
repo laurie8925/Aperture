@@ -13,6 +13,7 @@ export type RootStackParamList = {
     note: string;
     prompt: string;
     id: string;
+    date: string;
   };
   UploadEntry: {
     token: string;
@@ -25,6 +26,7 @@ export type RootStackParamList = {
     note: string;
     prompt: string;
     id: string;
+    date: string;
   };
 };
 

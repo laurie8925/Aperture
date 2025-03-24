@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Text,
+  ScrollView,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Button, Input } from "@rneui/themed";
@@ -29,10 +30,9 @@ export default function UploadEntry({ navigation, route }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const scrollViewRef = useRef<ScrollView>(null); // Ref for ScrollView
 
-  // Extract params from route
   const { token, promptId, prompt, size = 300 } = route.params;
-
   const photoSize = { height: size, width: size };
 
   const todayDate = new Date().toLocaleDateString("en-US", {
@@ -43,8 +43,6 @@ export default function UploadEntry({ navigation, route }: Props) {
   async function uploadImage() {
     try {
       setUploading(true);
-
-      // Request permission if not already granted
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -53,7 +51,7 @@ export default function UploadEntry({ navigation, route }: Props) {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
@@ -122,6 +120,7 @@ export default function UploadEntry({ navigation, route }: Props) {
         note: note || "",
         prompt: prompt,
         id: response.data.data.id,
+        date: todayDate,
       });
     } catch (error) {
       console.error("Submit error:", error);
@@ -134,6 +133,14 @@ export default function UploadEntry({ navigation, route }: Props) {
     }
   }
 
+  // Function to scroll to the input when it gains focus
+  const handleFocus = () => {
+    scrollViewRef.current?.scrollTo({
+      y: 400, // Adjust this value based on your layout
+      animated: true,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -145,66 +152,73 @@ export default function UploadEntry({ navigation, route }: Props) {
 
       <Text style={styles.title}>{todayDate}</Text>
 
-      <View style={styles.promptContainer}>
-        <Text style={styles.promptstyle}>{prompt}</Text>
-      </View>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled" // Ensures taps work with keyboard open
+      >
+        <View style={styles.promptContainer}>
+          <Text style={styles.promptstyle}>{prompt}</Text>
+        </View>
 
-      <View style={styles.contentContainer}>
-        <View style={styles.photoContainer}>
-          {photoUrl ? (
-            <TouchableOpacity
-              onPress={uploadImage}
-              disabled={uploading}
-              activeOpacity={0.7} // Visual feedback on press
-            >
-              <Image
-                source={{ uri: photoUrl }}
-                accessibilityLabel="Tap to upload a new photo"
-                style={[photoSize, styles.avatar]}
-              />
-              {uploading && (
-                <Text style={styles.uploadingText}>Uploading ...</Text>
-              )}
-            </TouchableOpacity>
-          ) : (
-            <View>
+        <View style={styles.contentContainer}>
+          <View style={styles.photoContainer}>
+            {photoUrl ? (
               <TouchableOpacity
                 onPress={uploadImage}
                 disabled={uploading}
                 activeOpacity={0.7}
               >
-                <View style={[photoSize, styles.avatar, styles.noImage]}>
-                  <Image
-                    style={styles.imagestyle}
-                    source={require("../../assets/camera-favicon.png")}
-                  />
-                </View>
+                <Image
+                  source={{ uri: photoUrl }}
+                  accessibilityLabel="Tap to upload a new photo"
+                  style={[photoSize, styles.avatar]}
+                />
+                {uploading && (
+                  <Text style={styles.uploadingText}>Uploading ...</Text>
+                )}
               </TouchableOpacity>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Input
-            style={[styles.placeholder, styles.labeltext]}
-            label={
-              <View style={styles.labelContainer}>
-                <Text style={styles.text}>Note</Text>
+            ) : (
+              <View>
+                <TouchableOpacity
+                  onPress={uploadImage}
+                  disabled={uploading}
+                  activeOpacity={0.7}
+                >
+                  <View style={[photoSize, styles.avatar, styles.noImage]}>
+                    <Image
+                      style={styles.imagestyle}
+                      source={require("../../assets/camera-favicon.png")}
+                    />
+                  </View>
+                </TouchableOpacity>
               </View>
-            }
-            value={note}
-            onChangeText={(text) => setNote(text)}
-            placeholder="Add a note for this photo"
+            )}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Input
+              style={[styles.placeholder, styles.labeltext]}
+              label={
+                <View style={styles.labelContainer}>
+                  <Text style={styles.text}>Note</Text>
+                </View>
+              }
+              value={note}
+              onChangeText={(text) => setNote(text)}
+              placeholder="Add a note for this photo"
+              onFocus={handleFocus} // Scroll to input when focused
+            />
+          </View>
+
+          <Button
+            title={submitting ? "Submitting ..." : "Submit"}
+            onPress={uploadDatabase}
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonText}
           />
         </View>
-
-        <Button
-          title={submitting ? "Submitting ..." : "Submit"}
-          onPress={uploadDatabase}
-          buttonStyle={styles.button}
-          titleStyle={styles.buttonText}
-        />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -214,6 +228,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
     backgroundColor: "#F7EAD8",
+  },
+  scrollContent: {
+    flexGrow: 1, // Allows content to grow and scroll
   },
   backButton: {
     paddingLeft: 20,

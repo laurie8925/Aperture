@@ -1,6 +1,13 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Button, Input } from "@rneui/themed";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   useNavigation,
@@ -36,15 +43,22 @@ export default function EditEntryScreen({ route }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const photoSize = { width: 300, height: 300 }; // Matches UploadEntry default
+
+  const todayDate = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "2-digit",
+  });
+
   async function uploadImage() {
     try {
       setUploading(true);
-      const storedToken = await AsyncStorage.getItem("token"); //get token
+      const storedToken = await AsyncStorage.getItem("token");
       if (storedToken) {
         setToken(storedToken);
       }
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,
@@ -128,52 +142,77 @@ export default function EditEntryScreen({ route }: Props) {
         style={styles.backButton}
         onPress={() => navigation.navigate("Home")}
       >
-        <Ionicons name="chevron-back" size={24} color="black" />
+        <Ionicons name="chevron-back" size={40} color="#888E62" />
       </TouchableOpacity>
-      <Image
-        source={{ uri: photoUrl }}
-        style={[styles.avatar, styles.image, { width: 300, height: 300 }]}
-      />
 
-      <Button
-        title={uploading ? "Uploading ..." : "Change Photo"}
-        onPress={uploadImage}
-        disabled={uploading || submitting}
-        containerStyle={styles.buttonContainer}
-      />
+      <Text style={styles.title}>{todayDate}</Text>
 
-      <Text style={styles.textTitle}>Prompt</Text>
-      <Text>{prompt}</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.promptContainer}>
+          <Text style={styles.promptstyle}>{prompt}</Text>
+        </View>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.textTitle}>Note</Text>
-        <Input
-          value={note}
-          onChangeText={setNote}
-          placeholder="Enter your note here"
-          multiline
-          numberOfLines={4}
-          disabled={submitting}
-        />
-      </View>
+        <View style={styles.contentContainer}>
+          <View style={styles.photoContainer}>
+            <Image
+              source={{ uri: photoUrl }}
+              style={[photoSize, styles.avatar]}
+              accessibilityLabel="Photo to edit"
+            />
+            {uploading && (
+              <Text style={styles.uploadingText}>Uploading ...</Text>
+            )}
+          </View>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+          <Button
+            title={uploading ? "Uploading ..." : "Change Photo"}
+            onPress={uploadImage}
+            disabled={uploading || submitting}
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonText}
+            containerStyle={styles.buttonContainer}
+          />
 
-      <Button
-        title={submitting ? "Saving ..." : "Save"}
-        onPress={saveChanges}
-        loading={submitting}
-        disabled={submitting || uploading}
-        containerStyle={styles.buttonContainer}
-      />
+          <View style={styles.inputContainer}>
+            <Input
+              style={[styles.placeholder, styles.labeltext]}
+              label={
+                <View style={styles.labelContainer}>
+                  <Text style={styles.text}>Note</Text>
+                </View>
+              }
+              value={note}
+              onChangeText={setNote}
+              placeholder="Enter your note here"
+              multiline
+              numberOfLines={4}
+              disabled={submitting}
+            />
+          </View>
 
-      <Button
-        title="Cancel"
-        onPress={() => navigation.navigate("Home")}
-        type="outline"
-        containerStyle={styles.buttonContainer}
-        disabled={submitting || uploading}
-      />
+          {error && <Text style={styles.errorText}>{error}</Text>}
+
+          <Button
+            title={submitting ? "Saving ..." : "Save"}
+            onPress={saveChanges}
+            loading={submitting}
+            disabled={submitting || uploading}
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonText}
+            containerStyle={styles.buttonContainer}
+          />
+
+          <Button
+            title="Cancel"
+            onPress={() => navigation.navigate("Home")}
+            type="outline"
+            buttonStyle={styles.cancelButton}
+            titleStyle={styles.cancelButtonText}
+            containerStyle={styles.buttonContainer}
+            disabled={submitting || uploading}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -181,32 +220,132 @@ export default function EditEntryScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingTop: 50,
+    backgroundColor: "#F7EAD8",
+  },
+  scrollContent: {
+    flexGrow: 1, // Allows content to grow and scroll
+  },
+  backButton: {
+    paddingLeft: 20,
+    alignSelf: "flex-start",
+  },
+  title: {
+    paddingBottom: 20,
+    fontSize: 26,
+    fontFamily: "PlayfairDisplayBold",
+    color: "#360C0C",
+    textAlign: "center",
+    paddingHorizontal: 20,
+  },
+  promptContainer: {
+    backgroundColor: "#360C0C",
+    borderRadius: 50,
+    paddingHorizontal: 40,
+    paddingVertical: 30,
+    marginHorizontal: 20,
+    zIndex: 1,
+  },
+  promptstyle: {
+    color: "#F7EAD8",
+    fontFamily: "RedHatDisplayMed",
+    fontSize: 20,
+    textAlign: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: "#888E62",
+    paddingTop: 60,
+    paddingBottom: 150,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
+    paddingHorizontal: 30,
+    marginTop: -30,
+  },
+  photoContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   avatar: {
-    borderRadius: 5,
-    overflow: "hidden",
-    maxWidth: "100%",
+    borderRadius: 30,
   },
-  image: {
-    objectFit: "cover",
-    paddingTop: 0,
-  },
-  textTitle: {
-    fontSize: 20,
-    marginTop: 10,
+  uploadingText: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -50 }, { translateY: -10 }],
+    color: "#fff",
+    fontWeight: "bold",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 5,
+    borderRadius: 3,
   },
   inputContainer: {
-    marginVertical: 15,
+    marginVertical: 10,
+  },
+  button: {
+    alignSelf: "center",
+    backgroundColor: "#360C0C",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    width: 200,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#F7EAD8",
+    fontSize: 16,
+    textAlign: "center",
+    fontFamily: "PlayfairDisplayBold",
+  },
+  cancelButton: {
+    alignSelf: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    width: 200,
+    alignItems: "center",
+    borderColor: "#360C0C",
+    borderWidth: 2,
+    backgroundColor: "transparent",
+  },
+  cancelButtonText: {
+    color: "#360C0C",
+    fontSize: 16,
+    textAlign: "center",
+    fontFamily: "PlayfairDisplayBold",
   },
   buttonContainer: {
     marginVertical: 10,
   },
+  placeholder: {
+    backgroundColor: "#f6ebd9",
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 999,
+    alignItems: "center",
+    fontFamily: "RedHatDisplayMed",
+  },
+  text: {
+    color: "#fff",
+    fontSize: 26,
+    fontFamily: "PlayfairDisplayBold",
+  },
+  labeltext: {
+    fontSize: 18,
+    fontFamily: "PlayfairDisplayBold",
+    color: "#360C0C",
+  },
+  labelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+    gap: 10,
+  },
   errorText: {
     color: "red",
     marginVertical: 10,
-  },
-  backButton: {
-    marginBottom: 20,
+    textAlign: "center",
+    fontFamily: "RedHatDisplayMed",
   },
 });

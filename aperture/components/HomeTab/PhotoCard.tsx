@@ -27,6 +27,7 @@ const PhotoCard = ({ photo, navigation }: PhotoCardProps) => {
             prompt: photo.prompt,
             note: photo.note || "",
             id: photo.id,
+            date: convertDate(photo.date),
           })
         }
         style={styles.cardcontainer}
