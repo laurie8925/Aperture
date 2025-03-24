@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Button, Input } from "@rneui/themed";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   useNavigation,
@@ -46,6 +46,9 @@ export default function EditEntryScreen({ route }: Props) {
 
   const photoSize = { width: 300, height: 300 }; // Matches UploadEntry default
 
+  useEffect(() => {
+    console.log("Route params:", route.params);
+  }, [route.params]);
   const todayDate = new Date().toLocaleDateString("en-US", {
     month: "long",
     day: "2-digit",

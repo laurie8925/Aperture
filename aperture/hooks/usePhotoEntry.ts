@@ -25,7 +25,6 @@ export const usePhotoEntry = (
         if (!storedToken) throw new Error("No token found.");
 
         const entryResponse = await axios.get(`${backendUrl}/photo/today`, {
-          params: { prompt_id: currentPromptId },
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
@@ -50,9 +49,17 @@ export const usePhotoEntry = (
         const storedToken = await AsyncStorage.getItem("token");
         if (!storedToken)
           throw new Error("No token found. Please log in first.");
-        setToken(storedToken);
 
-        const promptResponse = await axios.get(`${backendUrl}/prompts/today`);
+        // Reset state on account switch
+        setToken(storedToken);
+        setTodayEntry(null);
+        setPromptId("");
+        setPrompt("");
+        setError("");
+
+        const promptResponse = await axios.get(`${backendUrl}/prompts/today`, {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
         if (!promptResponse.data || !promptResponse.data.id) {
           throw new Error("Failed to fetch prompt: No prompt ID found.");
         }
@@ -65,7 +72,7 @@ export const usePhotoEntry = (
       }
     };
     initialize();
-  }, [navigation]);
+  }, [navigation]); // Ensure this runs on account switch
 
   useEffect(() => {
     if (promptId) {

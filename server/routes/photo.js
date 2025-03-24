@@ -54,28 +54,23 @@ router.post("/add-photo", authenticateToken, async (req, res) => {
 
 router.get("/today", authenticateToken, async (req, res) => {
   try {
-    const { prompt_id } = req.query;
-    if (!prompt_id) {
-      return res.status(400).json({ message: "Missing prompt_id parameter" });
-    }
-
     const user_id = req.user?.userId;
+    const today = new Date().toISOString().split("T")[0]; // '2025-03-23'
 
     const { data, error } = await supabase
       .from("photos")
       .select()
       .eq("user_id", user_id)
-      .eq("prompt_id", prompt_id)
+      .eq("date", today)
       .order("date", { ascending: false })
-      .limit(1)
-      .single();
+      .limit(1); // No .single()
 
     if (error) {
       console.error(`API /today - Query error:`, error);
       return res.status(500).json({ message: "Query failed", error });
     }
 
-    res.json(data || false);
+    res.json(data.length > 0 ? data[0] : false); // Matches frontend expectation
   } catch (error) {
     console.error(`API /today - General error:`, error);
     return res.status(500).json({ message: "Internal server error" });
@@ -89,80 +84,81 @@ router.post("/edit", authenticateToken, async (req, res) => {
     const { id, note, image_url } = req.body;
     const user_id = req.user?.userId;
 
+    console.log("POST /photo/edit - Request body:", req.body); // Log the id
+    console.log("POST /photo/edit - User ID:", user_id);
+
     if (!id) {
-      return res.status(400).json({
-        error: "Missing photo id",
-      });
+      return res.status(400).json({ error: "Missing photo id" });
     }
 
     // Validate inputs
     if (note && typeof note !== "string") {
-      return res.status(400).json({
-        error: "Note must be a string",
-      });
+      return res.status(400).json({ error: "Note must be a string" });
     }
     if (
       image_url &&
       (typeof image_url !== "string" || !image_url.match(/^https?:\/\/.+/))
     ) {
-      return res.status(400).json({
-        error: "Image URL must be a valid URL string",
-      });
+      return res
+        .status(400)
+        .json({ error: "Image URL must be a valid URL string" });
     }
 
-    // Verify the photo belongs to the user
+    // Verify photo exists and belongs to user
     const { data: existingPhoto, error: checkError } = await supabase
       .from("photos")
       .select("user_id")
       .eq("id", id)
-      .single();
+      .eq("user_id", user_id)
+      .limit(1); // Avoid .single() for now
 
     if (checkError) {
       console.error("Supabase check error:", checkError);
-      return res.status(500).json({
-        error: "Failed to verify photo ownership",
-        details: checkError.message,
-      });
+      return res
+        .status(500)
+        .json({ error: "Failed to verify photo", details: checkError.message });
     }
 
-    if (!existingPhoto || existingPhoto.user_id !== user_id) {
-      return res.status(403).json({
-        error: "Unauthorized: You can only edit your own photos",
-      });
+    if (!existingPhoto || existingPhoto.length === 0) {
+      console.log(`Photo with id=${id} not found for user=${user_id}`);
+      return res.status(404).json({ error: "Photo not found or not yours" });
     }
 
-    // Build update object with only provided fields
+    // Build update object
     const updateData = {};
     if (note !== undefined) updateData.note = note;
     if (image_url !== undefined) updateData.image_url = image_url;
 
-    // update the photo entry
+    // Update the photo
     const { data, error } = await supabase
       .from("photos")
       .update(updateData)
       .eq("id", id)
-      .select()
-      .single();
+      .eq("user_id", user_id)
+      .select();
 
     if (error) {
       console.error("Supabase update error:", error);
-      return res.status(500).json({
-        error: "Failed to update photo",
-        details: error.message,
-        code: error.code,
-      });
+      return res
+        .status(500)
+        .json({ error: "Failed to update photo", details: error.message });
     }
 
-    res.status(200).json({
-      message: "Photo updated successfully",
-      data,
-    });
+    if (data.length === 0) {
+      console.log(`No rows updated for id=${id}, user=${user_id}`);
+      return res
+        .status(404)
+        .json({ error: "Photo not found or already updated" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Photo updated successfully", data: data[0] });
   } catch (error) {
     console.error("Error updating photo:", error);
-    res.status(500).json({
-      error: "Failed to update photo",
-      details: error.message,
-    });
+    res
+      .status(500)
+      .json({ error: "Failed to update photo", details: error.message });
   }
 });
 
