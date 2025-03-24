@@ -55,18 +55,19 @@ const styles = StyleSheet.create({
     height: 200,
   },
   button: {
+    alignSelf: "center",
     backgroundColor: "#360C0C",
     paddingVertical: 20,
-    paddingHorizontal: 24,
+    paddingHorizontal: 30,
     borderRadius: 999,
-    width: 250,
+
     alignItems: "center",
   },
   buttonText: {
     color: "#F7EAD8",
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 24,
     textAlign: "center",
+    fontFamily: "PlayfairDisplayBold",
   },
 });
 

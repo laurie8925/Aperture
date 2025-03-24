@@ -35,7 +35,7 @@ export default function ShowEntryScreen({ route }: Props) {
         <View style={styles.photoContainer}>
           <Image
             source={{ uri: photoUrl }}
-            style={[styles.avatar, styles.image, { width: 300, height: 300 }]}
+            style={[styles.avatar, { width: 300, height: 300 }]}
           />
         </View>
         {note !== "" ? (
@@ -114,35 +114,9 @@ const styles = StyleSheet.create({
   avatar: {
     borderRadius: 30,
   },
-  noImage: {
-    backgroundColor: "#F7EAD8",
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  uploadingText: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: [{ translateX: -50 }, { translateY: -10 }],
-    color: "#fff",
-    fontWeight: "bold",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: 5,
-    borderRadius: 3,
-  },
-  uploadText: {
-    textAlign: "center",
-    marginTop: 10,
-    color: "#007AFF",
-    fontWeight: "bold",
-  },
   imagestyle: {
     width: 100,
     height: 100,
-  },
-  inputContainer: {
-    marginVertical: 10,
   },
   button: {
     alignSelf: "center",
