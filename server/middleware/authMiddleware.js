@@ -14,7 +14,7 @@ function authenticateToken(req, res, next) {
     const decoded = jwt.verify(token, SUPABASE_JWT_SECRET);
     req.user = decoded;
     // console.log("after decode", token);
-    console.log("Decoded user:", req.user);
+    // console.log("Decoded user:", req.user);
     next();
   } catch (err) {
     console.log("Verification error:", err.message);

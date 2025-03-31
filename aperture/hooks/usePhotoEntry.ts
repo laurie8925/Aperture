@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alert } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../types/NavigationType";
 
@@ -19,6 +18,8 @@ export const usePhotoEntry = (
   const [error, setError] = useState("");
 
   const checkTodayEntry = useCallback(
+    //callback so it will only recall this function when token changes
+    //ensures checkTodayEntry is stable across renders unless token changes
     async (currentPromptId: string) => {
       try {
         const storedToken = token;
@@ -50,7 +51,7 @@ export const usePhotoEntry = (
         if (!storedToken)
           throw new Error("No token found. Please log in first.");
 
-        // Reset state on account switch
+        // Reset state
         setToken(storedToken);
         setTodayEntry(null);
         setPromptId("");
@@ -72,11 +73,11 @@ export const usePhotoEntry = (
       }
     };
     initialize();
-  }, [navigation]); // Ensure this runs on account switch
+  }, [token]); // runs on account switch
 
   useEffect(() => {
     if (promptId) {
-      checkTodayEntry(promptId);
+      checkTodayEntry(promptId); //check if entry exist for the prompt
     }
   }, [promptId, checkTodayEntry]);
 

@@ -1,3 +1,8 @@
+/*
+TODO: 
+- get entry from async storage and update it when its edited
+*/
+
 import {
   View,
   Text,
@@ -129,11 +134,10 @@ export default function EditEntryScreen({ route }: Props) {
           date,
         });
       }
-    } catch (err) {
-      console.error("Error updating photo entry:", err);
-      setError(
-        "Failed to save changes: " + (err.response?.data?.error || String(err))
-      );
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message || "Failed to save entry");
+      }
     } finally {
       setSubmitting(false);
     }

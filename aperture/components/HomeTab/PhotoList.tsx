@@ -1,4 +1,9 @@
-import { View, Text, FlatList, ScrollView } from "react-native";
+/*
+TODO: 
+- add async storgae for user entries to prevent redundant backend calling 
+*/
+
+import { View, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { usePhotoEntry } from "../../hooks/usePhotoEntry";
@@ -16,13 +21,12 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 export default function PhotoList({ navigation }: Props) {
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [isDataLoaded, setIsDataLoaded] = useState(false); // Track if data is loaded
   const { prompt, token, todayEntry, promptId } = usePhotoEntry(navigation);
 
   useEffect(() => {
     async function getPhotos() {
       try {
-        if (!token || isDataLoaded) return; // Skip if no token or data already loaded
+        if (!token) return; // Skip if no token
         const response = await axios.get(`${backendUrl}/photo/user/entries`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -37,13 +41,12 @@ export default function PhotoList({ navigation }: Props) {
         }));
 
         setPhotos(allPhotos);
-        setIsDataLoaded(true);
       } catch (error) {
         console.error("Error getting user photos:", error);
       }
     }
     getPhotos();
-  }, [token, isDataLoaded]); // add depencey if the data is loaded
+  }, [token]);
 
   return (
     <ScrollView
