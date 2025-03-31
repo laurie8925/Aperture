@@ -1,3 +1,8 @@
+/*
+TODO: 
+- get photo entries from async storage and add the new entry 
+*/
+
 import { useState, useRef } from "react";
 import {
   StyleSheet,
@@ -51,7 +56,7 @@ export default function UploadEntry({ navigation, route }: Props) {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsMultipleSelection: false,
         allowsEditing: true,
         quality: 0.5,

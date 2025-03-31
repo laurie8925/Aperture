@@ -25,7 +25,7 @@ export const useAuth = (): AuthState => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [error, seterror] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     //call this first always
@@ -46,7 +46,7 @@ export const useAuth = (): AuthState => {
             });
             setIsAuthenticated(true);
           } else {
-            throw new error("Invalid user data");
+            throw new Error("Invalid user data");
           }
         } else {
           setIsAuthenticated(false);
@@ -54,8 +54,9 @@ export const useAuth = (): AuthState => {
           setToken(null);
         }
       } catch (error) {
-        console.log("Login error:", error);
-        seterror(error.response?.data.message || "Login Failed");
+        if (error instanceof Error) {
+          setError(error.message || "Login error");
+        }
         throw error;
       }
     };
@@ -64,7 +65,7 @@ export const useAuth = (): AuthState => {
 
   const signup = async (email: string, password: string, name: string) => {
     try {
-      seterror(null);
+      setError(null);
       const response = await axios.post(`${backendUrl}/auth/signup`, {
         email,
         password,
@@ -72,30 +73,27 @@ export const useAuth = (): AuthState => {
       });
 
       if (response.status === 200 && !response.data.session) {
-        seterror(response.data.message);
+        setError(response.data.message);
       } else if (response.data.error) {
-        throw new error(response.data.error);
+        throw new Error(response.data.error);
       }
     } catch (error) {
-      console.error("Signup error:", error.response?.data || error);
-      seterror(
-        error.response?.data?.message ||
-          error.response?.data?.error ||
-          "Signup failed"
-      );
+      if (error instanceof Error) {
+        setError(error.message || "Signup error");
+      }
       throw error;
     }
   };
 
   const login = async (email: string, password: string) => {
     try {
-      seterror(null);
+      setError(null);
       const response = await axios.post(`${backendUrl}/auth`, {
         email,
         password,
       });
       const { token } = response.data;
-      if (!token) throw new error("No token received");
+      if (!token) throw new Error("No token received");
 
       await AsyncStorage.setItem("token", token);
       setToken(token);
@@ -110,15 +108,16 @@ export const useAuth = (): AuthState => {
       });
       setIsAuthenticated(true);
     } catch (error) {
-      console.error("Login error:", error.response?.data || error);
-      seterror(error.response?.data?.message || "Login failed");
+      if (error instanceof Error) {
+        setError(error.message || "Login failed");
+      }
       throw error;
     }
   };
 
   const logout = async () => {
     try {
-      seterror(null);
+      setError(null);
       if (token) {
         await axios.get(`${backendUrl}/user/logout`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -129,8 +128,9 @@ export const useAuth = (): AuthState => {
       setToken(null);
       setIsAuthenticated(false);
     } catch (error) {
-      console.error("Logout error:", error.response?.data || error);
-      seterror(error.response?.data?.message || "Logout failed");
+      if (error instanceof Error) {
+        setError(error.message || "Logout failed");
+      }
     }
   };
 
