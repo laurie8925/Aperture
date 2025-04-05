@@ -21,7 +21,7 @@ Anyone who would like to start relfecting on their days.
 
 ## Demo
 
-[![Demo](https://img.youtube.com/vi/nZbdNoRiCBg/0.jpg)](https://youtube.com/shorts/nZbdNoRiCBg)
+![My Short Preview](./assets/demo.gif)
 
 ### Tech Stack
 
