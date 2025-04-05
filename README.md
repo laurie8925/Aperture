@@ -19,7 +19,9 @@ Anyone who would like to start relfecting on their days.
 - Daily prompt are answered with one photo! (with the option to add note)
 - Display most recent entries on Home Page
 
-## Implementation
+## Demo
+
+![Aperture](./assets/demo.mp4)
 
 ### Tech Stack
 
