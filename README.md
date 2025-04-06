@@ -21,9 +21,10 @@ Anyone who would like to start relfecting on their days.
 
 ### Demo
 
+Preview
 <img src="./assets/demo.gif" width="200" alt="Demo">
 
-[Watch the demo video](https://youtube.com/shorts/nZbdNoRiCBg)
+[Demo video](https://youtube.com/shorts/nZbdNoRiCBg)
 
 ### Tech Stack
 
