@@ -22,6 +22,7 @@ Anyone who would like to start relfecting on their days.
 ### Demo
 
 Preview
+
 <img src="./assets/demo.gif" width="200" alt="Demo">
 
 [Demo video](https://youtube.com/shorts/nZbdNoRiCBg)
