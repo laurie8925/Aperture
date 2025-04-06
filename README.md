@@ -21,8 +21,8 @@ Anyone who would like to start relfecting on their days.
 
 ## Demo
 
-![Short Preview](./assets/demo.gif)
-[![Aperture App Demo](./assets/home_screen.png)](https://youtube.com/shorts/nZbdNoRiCBg)
+[<img src="./assets/demo.gif" width="400" alt="Demo">]
+![Aperture App Demo](https://youtube.com/shorts/nZbdNoRiCBg)
 
 ### Tech Stack
 
