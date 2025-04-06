@@ -22,7 +22,7 @@ Anyone who would like to start relfecting on their days.
 ## Demo
 
 [<img src="./assets/demo.gif" width="400" alt="Demo">]
-![Aperture App Demo](https://youtube.com/shorts/nZbdNoRiCBg)
+[Watch the demo video](https://youtube.com/shorts/nZbdNoRiCBg)
 
 ### Tech Stack
 
