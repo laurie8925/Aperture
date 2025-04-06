@@ -19,9 +19,10 @@ Anyone who would like to start relfecting on their days.
 - Daily prompt are answered with one photo! (with the option to add note)
 - Display most recent entries on Home Page
 
-## Demo
+### Demo
 
-[<img src="./assets/demo.gif" width="400" alt="Demo">]
+[<img src="./assets/demo.gif" width="200" alt="Demo">]
+
 [Watch the demo video](https://youtube.com/shorts/nZbdNoRiCBg)
 
 ### Tech Stack
