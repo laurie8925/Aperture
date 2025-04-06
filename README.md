@@ -19,32 +19,34 @@ Anyone who would like to start relfecting on their days.
 - Daily prompt are answered with one photo! (with the option to add note)
 - Display most recent entries on Home Page
 
-## Demo
+### Demo
 
-![My Short Preview](./assets/demo.gif)
+<img src="./assets/demo.gif" width="200" alt="Demo">
+
+[Watch the demo video](https://youtube.com/shorts/nZbdNoRiCBg)
 
 ### Tech Stack
 
-Frontend
+#### Frontend
 
 - React Native
 - Typescript
 
-Backend
+#### Backend
 
 - Node.js
 - Express.js
 
-Database & File Storage
+#### Database & File Storage
 
 - PostgreSql
 - Supabase
 
-Authentication
+#### Authentication
 
 - JWT
 
-Testing
+#### Testing
 
 - POSTMAN
 
@@ -77,31 +79,31 @@ Photo: id, userId, promptId, imageUrl, date, note, prompt
 
 ### Endpoints
 
-Auth
+#### Auth
 
 - GET /auth
 - POST /auth/signup
 
-Prompt
+#### Prompt
 
 - GET /prompt/today
 - GET /prompt
 
-Photos
+#### Photos
 
 - POST /photo/add-photo
 - GET /photo/today
 - GET /photos/user/entries
 - POST /photo/edit
 
-Users
+#### Users
 
 - GET /user
 - get /users/logout
 
 ## Roadmap
 
-Frontend
+#### Frontend
 
 - set up frontend folders and github
 - React Routing and navigation
@@ -118,10 +120,9 @@ Frontend
 - navigation bar
 - entry page
 - individual entry page
-
 - Starting, Login, signup page
 
-Backend
+#### Backend
 
 - set up backedn folders and github
 - Users Authentication
@@ -144,7 +145,7 @@ Backend
   - reset password: PUT /users/me/password
   - delete user: DELETE /users/me
 
-Database & File storage
+#### Database & File storage
 
 - set up databases
 - set up firebase file storage
