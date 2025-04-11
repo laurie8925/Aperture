@@ -1,7 +1,14 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Button } from "@rneui/themed";
-import React from "react";
+import { useRef } from "react";
 import {
   useNavigation,
   NavigationProp,
@@ -17,6 +24,9 @@ interface Props {
 export default function ShowEntryScreen({ route }: Props) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { photoUrl, note, prompt, id, date } = route.params; //props from navigation in photoentry screen
+  // Function to scroll to the input when it gains focus
+  const scrollViewRef = useRef<ScrollView>(null); // Ref for ScrollView
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -27,40 +37,51 @@ export default function ShowEntryScreen({ route }: Props) {
       </TouchableOpacity>
       <Text style={styles.title}>{date}</Text>
 
-      <View style={styles.promptContainer}>
-        <Text style={styles.promptstyle}>{prompt}</Text>
-      </View>
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled" // Ensures taps work with keyboard open
+      >
+        <View style={styles.promptContainer}>
+          <Text style={styles.promptstyle}>{prompt}</Text>
+        </View>
 
-      <View style={styles.contentContainer}>
-        <View style={styles.photoContainer}>
-          <Image
-            source={{ uri: photoUrl }}
-            style={[styles.avatar, { width: 300, height: 300 }]}
+        <View style={styles.contentContainer}>
+          <View style={styles.photoContainer}>
+            <Image
+              source={{ uri: photoUrl }}
+              style={[styles.avatar, { width: 300, height: 300 }]}
+            />
+          </View>
+          {note !== "" ? (
+            <View style={styles.labelContainer}>
+              <Text style={styles.text}>Note</Text>
+              <Text style={[styles.placeholder, styles.labeltext]}>{note}</Text>
+            </View>
+          ) : null}
+
+          <Button
+            title="Edit"
+            onPress={() =>
+              navigation.navigate("EditEntry", {
+                photoUrl,
+                note,
+                prompt,
+                id,
+                date,
+              })
+            }
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonText}
+          />
+          <Button
+            title="Home"
+            onPress={() => navigation.navigate("Home")}
+            buttonStyle={styles.button}
+            titleStyle={styles.buttonText}
           />
         </View>
-        {note !== "" ? (
-          <View style={styles.labelContainer}>
-            <Text style={styles.text}>Note</Text>
-            <Text style={[styles.placeholder, styles.labeltext]}>{note}</Text>
-          </View>
-        ) : null}
-
-        <Button
-          title="Edit"
-          onPress={() =>
-            navigation.navigate("EditEntry", {
-              photoUrl,
-              note,
-              prompt,
-              id,
-              date,
-            })
-          }
-          buttonStyle={styles.button}
-          titleStyle={styles.buttonText}
-        />
-        {/* <Button title="Home" onPress={() => navigation.navigate("Home")} /> */}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -126,6 +147,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     width: 200,
     alignItems: "center",
+    marginBottom: 30,
   },
   buttonText: {
     color: "#F7EAD8",
@@ -159,5 +181,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
     gap: 10,
+  },
+  scrollContent: {
+    flexGrow: 1, // Allows content to grow and scroll
   },
 });
