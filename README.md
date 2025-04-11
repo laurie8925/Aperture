@@ -25,7 +25,9 @@ Preview
 
 <img src="./assets/demo.gif" width="200" alt="Demo">
 
+
 [Demo video](https://youtube.com/shorts/M2u_dW_dzdM)
+
 
 ### Tech Stack
 
