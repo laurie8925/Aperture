@@ -30,6 +30,7 @@ export default function Auth({ auth }: SignupProps) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
 
@@ -52,16 +53,10 @@ export default function Auth({ auth }: SignupProps) {
         Alert.alert("Success", "Signup successful!");
       }
     } catch (error) {
-      if (error.response) {
-        Alert.alert(
-          "Error",
-          error.response.data.error || error.response.data.message
-        );
-      } else if (error.request) {
-        Alert.alert("Error", "No response from server");
-      } else {
-        Alert.alert("Error", error.message);
+      if (error instanceof Error) {
+        setError(error.message || "Sign Up failed");
       }
+      throw error;
     } finally {
       setLoading(false);
       navigation.navigate("LogIn");

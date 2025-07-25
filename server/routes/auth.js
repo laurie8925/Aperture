@@ -18,15 +18,18 @@ router.route("/").post(async (req, res) => {
 
     if (error) {
       console.error("Supabase Auth Error:", error); // Log the actual error from Supabase
-      return res
-        .status(401)
-        .json({ message: "Authentication failed", error: error.message });
+      console.error("Supabase Auth Error:", {
+        message: error.message,
+        status: error.status,
+        code: error.code,
+      });
+      return res.status(401).json({ message: "Incorrect email or password" });
     }
 
     if (!data) {
       return res
         .status(401)
-        .json({ message: "Authentication failed: No data found" });
+        .json({ message: "Authentication failed: No user found" });
     }
 
     const user = data.user;

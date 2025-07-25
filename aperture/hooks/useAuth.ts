@@ -107,10 +107,8 @@ export const useAuth = (): AuthState => {
         name: userresponse.data.user.name,
       });
       setIsAuthenticated(true);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message || "Login failed");
-      }
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Login failed");
       throw error;
     }
   };
@@ -129,7 +127,7 @@ export const useAuth = (): AuthState => {
       setIsAuthenticated(false);
     } catch (error) {
       if (error instanceof Error) {
-        setError(error.message || "Logout failed");
+        setError(error.response?.data?.message || "Logout failed");
       }
     }
   };
