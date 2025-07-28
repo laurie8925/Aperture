@@ -58,28 +58,15 @@ Preview
 
 - Customized database
 
-### Sitemap
-
-Landing screen: starting screen for first time user and a bit about the application(nav)-> Login Screen
-Login Screen: login page for existing users, directed to create account screen if new user (nav)-> Home screen, Create Account Screen
-Create Account Screen: Create new account, add (post) new user to database (nav) -> Login Page
-
-Home Page: display the most recent entry and today's prompt (nav) -> new entry, individual card page
-Entry Page: upload photo for prompt of the day (nav) -> individual card page, back (to home page)
-Indiviudal card page: shows that specific day entry, with prompt, photo, and notes (nav) -> home page
-Edit Individual card page: edit that specific day entry, with prompt, photo, and notes (nav) -> home page
-
-Account detail page: shows the user's name, email, and logout
-
 ### Mockups
 
 ![Mockups of Leuchte](./assets/image.png)
 
 ### Data
 
-User: id, email, password (hashed), createdAt
-Prompt: id, text, date
-Photo: id, userId, promptId, imageUrl, date, note, prompt
+- User: id, email, password (hashed), createdAt
+- Prompt: id, text, date
+- Photo: id, userId, promptId, imageUrl, date, note, prompt
 
 ### Endpoints
 
@@ -104,60 +91,6 @@ Photo: id, userId, promptId, imageUrl, date, note, prompt
 
 - GET /user
 - get /users/logout
-
-## Roadmap
-
-#### Frontend
-
-- set up frontend folders and github
-- React Routing and navigation
-- Create folder structure
-- Home page
-  - photo card components
-  - daily prompt entry
-- Calendar Page
-  - make days with entry clickable to individual entry screen
-- Account Page
-  - edit account page
-  - delete module screen
-  - account page statistics
-- navigation bar
-- entry page
-- individual entry page
-- Starting, Login, signup page
-
-#### Backend
-
-- set up backedn folders and github
-- Users Authentication
-  - user authentication (JWT)
-  - store token (httponly, secure, same-site cookie)
-  - logins: GET /auth/login
-- Prompt
-  - get daily prompts: GET /prompt/today
-- Photos
-  - fetch users photo entries: GET /photos
-  - photo entry: POST /photos/upload
-  - get recent entry: GET /photos/recent
-  - get individual photo: GET /photos/:photoId
-  - edit entry: PUT /photos/:photoId
-  - get calendar entry: GET /photos/calendar
-- Users
-  - create user: POST /user
-  - get user data: GET /users/me
-  - update user data: PUT /users/me
-  - reset password: PUT /users/me/password
-  - delete user: DELETE /users/me
-
-#### Database & File storage
-
-- set up databases
-- set up firebase file storage
-- add prompts to prompt database
-- connect database to backend
-- connect photo files to database
-
----
 
 ## Future Implementations
 
