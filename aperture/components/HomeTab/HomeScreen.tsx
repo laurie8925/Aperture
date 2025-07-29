@@ -1,12 +1,13 @@
 /* FIXME:
 - currently the name is ""
 - update backend to get access to public user database for their name*/
-import React from "react";
+import React, { useState, createContext, useContext } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PhotoList from "./PhotoList";
 import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
 import { AuthState, useAuth } from "../../hooks/useAuth";
+import { Photo } from "../../types/types";
 
 interface HomeScreenProps {
   navigation: NavigationProp<RootStackParamList>;
@@ -14,21 +15,39 @@ interface HomeScreenProps {
   auth: AuthState;
 }
 
+interface PhotoContextType {
+  photos: Photo[];
+  setPhotos: (photos: Photo[]) => void;
+}
+
+export const PhotoContext = createContext<PhotoContextType | undefined>(
+  undefined
+);
+
 export default function HomeScreen({ auth, navigation }: HomeScreenProps) {
   const name = auth.user?.name || "Guest";
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [entryData, setEntryData] = useState<Photo[]>([]);
+  function handleDataFromPhotoList(data: Photo[]) {
+    setEntryData(data);
+  }
   return (
-    <View style={styles.container}>
-      <View style={styles.centerContainer}>
-        <Text style={styles.textstyle}>Aperture</Text>
+    <PhotoContext.Provider value={{ photos, setPhotos }}>
+      <View style={styles.container}>
+        <View style={styles.centerContainer}>
+          <Text style={styles.textstyle}>Aperture</Text>
+        </View>
+        <View style={styles.header}>
+          <Text style={styles.title}>Hello, {name}!</Text>
+        </View>
+        <View style={styles.photolistContainer}>
+          <PhotoList
+            navigation={navigation}
+            sendEntryToHome={handleDataFromPhotoList}
+          />
+        </View>
       </View>
-      <View style={styles.header}>
-        <Text style={styles.title}>Hello, {name}!</Text>
-        {/* <Text style={styles.subtitle}>Welcome, {name}!</Text> */}
-      </View>
-      <View style={styles.photolistContainer}>
-        <PhotoList navigation={navigation} />
-      </View>
-    </View>
+    </PhotoContext.Provider>
   );
 }
 

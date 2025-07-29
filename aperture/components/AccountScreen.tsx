@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
 import { AuthState } from "../hooks/useAuth";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AccountScreenProps {
   auth: AuthState;
@@ -11,6 +12,7 @@ export default function AccountScreen({ auth }: AccountScreenProps) {
   async function handleSignOut() {
     try {
       await auth.logout();
+      // await AsyncStorage.removeItem("userPhotos");
     } catch (error) {
       console.error("Logout error:", auth.error);
     }

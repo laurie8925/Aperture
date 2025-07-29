@@ -4,28 +4,43 @@ TODO:
 */
 
 import { View, ScrollView } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { usePhotoEntry } from "../../hooks/usePhotoEntry";
 import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhotoCard from "./PhotoCard";
 import PromptCard from "./PromptCard";
 import { Photo } from "../../types/types";
+import { PhotoContext } from "./HomeScreen";
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;
+  sendEntryToHome: (data: Photo[]) => void;
 }
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
-export default function PhotoList({ navigation }: Props) {
+export default function PhotoList({ navigation, sendEntryToHome }: Props) {
+  // const context = useContext(PhotoContext);
+  // if (!context) {
+  //   throw new Error("PhotoList must be used within a PhotoContext Provider");
+  // }
+  // const { photos, setPhotos } = context;
   const [photos, setPhotos] = useState<Photo[]>([]);
   const { prompt, token, todayEntry, promptId } = usePhotoEntry(navigation);
 
   useEffect(() => {
     async function getPhotos() {
       try {
+        // const storedPhotos = await AsyncStorage.getItem("userPhotos");
+        // if (storedPhotos) {
+        //   // Skip backend call if photos exist
+        //   setPhotos(JSON.parse(storedPhotos));
+        //   return;
+        // }
+
         if (!token) return; // Skip if no token
         const response = await axios.get(`${backendUrl}/photo/user/entries`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -41,12 +56,13 @@ export default function PhotoList({ navigation }: Props) {
         }));
 
         setPhotos(allPhotos);
+        // await AsyncStorage.setItem("userPhotos", JSON.stringify(allPhotos));
       } catch (error) {
         console.error("Error getting user photos:", error);
       }
     }
     getPhotos();
-  }, [token]);
+  }, [token, setPhotos]);
 
   return (
     <ScrollView

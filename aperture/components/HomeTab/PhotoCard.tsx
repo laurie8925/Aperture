@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { TouchableOpacity, Image } from "react-native";
 import { RootStackParamList } from "../../types/NavigationType";
 import { NavigationProp } from "@react-navigation/native";
@@ -17,6 +17,7 @@ function convertDate(dateString: string) {
 }
 
 const PhotoCard = ({ photo, navigation }: PhotoCardProps) => {
+  const [loading, setLoading] = useState(true);
   return (
     <View>
       <Text style={styles.datestyle}>{convertDate(photo.date)}</Text>
@@ -35,12 +36,37 @@ const PhotoCard = ({ photo, navigation }: PhotoCardProps) => {
         <View style={styles.rowContainer}>
           <Text style={styles.promptstyle}>{photo.prompt}</Text>
           {photo.image_url ? (
+            <View style={{ position: "relative", width: 150, height: 130 }}>
+              <Image
+                source={require("../../assets/image-placeholder.png")}
+                style={{
+                  width: 150,
+                  height: 130,
+                  borderRadius: 20,
+                  position: "absolute",
+                  opacity: loading ? 1 : 0, // Fade out of placeholder
+                }}
+                fadeDuration={300}
+              />
+              <Image
+                source={{ uri: photo.image_url }}
+                style={{
+                  width: 150,
+                  height: 130,
+                  borderRadius: 20,
+                  position: "absolute",
+                  opacity: loading ? 0 : 1, // Fade into actual image
+                }}
+                onLoadStart={() => setLoading(true)}
+                onLoadEnd={() => setLoading(false)}
+                fadeDuration={300}
+              />
+            </View>
+          ) : (
             <Image
-              source={{ uri: photo.image_url }}
+              source={require("../../assets/image-placeholder.png")}
               style={{ width: 150, height: 130, borderRadius: 20 }}
             />
-          ) : (
-            ""
           )}
         </View>
       </TouchableOpacity>
