@@ -15,7 +15,7 @@ Anyone who would like to start relfecting on their days.
 ### Features
 
 - Personalized user experience by having user accounts
-- Randomized daily prompt for users to reflect on their day
+- Daily prompts fetched from a list based on date
 - Daily prompt are answered with one photo! (with the option to add note)
 - Display most recent entries on Home Page
 
